@@ -4,6 +4,8 @@
 
 ATLButton::ATLButton()
 {
+    m_bMouseTracking = false;
+    m_bMouseWithin = false;
 }
 
 
@@ -12,13 +14,23 @@ ATLButton::~ATLButton()
 }
 
 
+void ATLButton::StartTrack()
+{
+    InOutlog(__FUNCTION__);
+    TRACKMOUSEEVENT time = { 0 };
+    time.cbSize = sizeof(time);
+    time.hwndTrack = m_hWnd;
+    time.dwFlags = TME_HOVER | TME_LEAVE;
+    time.dwHoverTime = HOVER_DEFAULT;
+    _TrackMouseEvent(&time);
+}
+
 LRESULT ATLButton::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     InOutlog(__FUNCTION__);
     bHandled = false;
     return 0;
 }
-
 
 LRESULT ATLButton::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
@@ -28,7 +40,6 @@ LRESULT ATLButton::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
     return 0;
 }
 
-
 LRESULT ATLButton::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     InOutlog(__FUNCTION__);
@@ -36,7 +47,6 @@ LRESULT ATLButton::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 
     return 0;
 }
-
 
 LRESULT ATLButton::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
@@ -75,5 +85,46 @@ LRESULT ATLButton::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 {
     InOutlog(__FUNCTION__);
     bHandled = false;
+    return 0;
+}
+
+LRESULT ATLButton::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    InOutlog(__FUNCTION__);
+    if (!m_bMouseWithin)
+    {
+        OnMouseEnter(uMsg, wParam, lParam, bHandled);
+    }
+    if (!m_bMouseTracking)
+    {
+        StartTrack();
+        m_bMouseTracking = true;
+    }
+    bHandled = false;
+    return 0;
+}
+
+LRESULT ATLButton::OnMouseHover(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    InOutlog(__FUNCTION__);
+    m_bMouseTracking = false;
+    bHandled = false;
+    return 0;
+}
+
+LRESULT ATLButton::OnMouseEnter(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    InOutlog(__FUNCTION__);
+    m_bMouseWithin = true;
+    bHandled = false;
+    return 0;
+}
+
+LRESULT ATLButton::OnMouseLeave(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    InOutlog(__FUNCTION__);
+    bHandled = false;
+    m_bMouseTracking = false;
+    m_bMouseWithin = false;
     return 0;
 }
