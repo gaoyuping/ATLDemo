@@ -6,7 +6,6 @@
 #include "LogInfo.h"
 
 
-
 ATLMain::ATLMain()
     :m_label(this)
 {
