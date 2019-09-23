@@ -8,11 +8,11 @@ import "oaidl.idl";
 import "ocidl.idl";
 
 [
-	uuid(4f1ff4c3-d526-43e3-a82a-5846c4b9cf6e),
-	version(1.0),
+    uuid(4f1ff4c3-d526-43e3-a82a-5846c4b9cf6e),
+    version(1.0),
 ]
 library ATLProject1Lib
 {
-	importlib("stdole2.tlb");
+    importlib("stdole2.tlb");
 };
 

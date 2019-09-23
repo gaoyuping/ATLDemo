@@ -13,8 +13,11 @@ public:
     MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove);
     MESSAGE_HANDLER(WM_MOUSEHOVER, OnMouseHover);
     MESSAGE_HANDLER(WM_MOUSELEAVE, OnMouseLeave);
+    MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus);
+    MESSAGE_HANDLER(WM_KILLFOCUS, OnKillFocus);
     END_MSG_MAP()
 
+    static bool IsWantedMessage(UINT uMsg);
 private:
     bool m_bMouseWithin;
     bool m_bMouseTracking; //m_bMouseTracking = false && m_bMouseWithin = true ÊÇhover×´Ì¬
@@ -33,5 +36,7 @@ public:
     virtual LRESULT OnMouseHover(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     virtual LRESULT OnMouseEnter(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     virtual LRESULT OnMouseLeave(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    virtual LRESULT OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    virtual LRESULT OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 };
 

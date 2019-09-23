@@ -4,6 +4,7 @@
 
 ATLButton::ATLButton()
 {
+    InOutlog(__FUNCTION__);
     m_bMouseTracking = false;
     m_bMouseWithin = false;
 }
@@ -13,6 +14,32 @@ ATLButton::~ATLButton()
 {
 }
 
+bool ATLButton::IsWantedMessage(UINT uMsg)
+{
+    switch (uMsg) {
+    case WM_SETFOCUS:
+    case WM_KILLFOCUS:
+//     case WM_LBUTTONDOWN:
+//     case WM_LBUTTONDBLCLK:
+//     case WM_LBUTTONUP:
+//     case WM_RBUTTONDOWN:
+//     case WM_RBUTTONDBLCLK:
+//     case WM_RBUTTONUP:
+//     case WM_MOUSEMOVE:
+//     case WM_MOUSELEAVE:
+//     case WM_CAPTURECHANGED:
+//     case WM_KEYDOWN:
+//     case WM_CONTEXTMENU:
+//     case WM_COMMAND:
+//     case WM_TIMER:
+//     case WM_CREATE:
+//     case WM_DESTROY:
+//     case WM_CHAR:
+        return true;
+    }
+
+    return false;
+}
 
 void ATLButton::StartTrack()
 {
@@ -87,22 +114,31 @@ LRESULT ATLButton::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     bHandled = false;
     return 0;
 }
-
+static CPoint _mousepoint;
 LRESULT ATLButton::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    InOutlog(__FUNCTION__);
+    if (_mousepoint.x == GET_X_LPARAM(lParam) && _mousepoint .y == GET_Y_LPARAM(lParam))
+    {
+        return TRUE;
+    }
+    //InOutlog(__FUNCTION__);
+    _mousepoint.x = GET_X_LPARAM(lParam);
+    _mousepoint.y = GET_Y_LPARAM(lParam);
     if (!m_bMouseWithin)
     {
-        OnMouseEnter(uMsg, wParam, lParam, bHandled);
+        //OnMouseEnter(uMsg, wParam, lParam, bHandled);
     }
     if (!m_bMouseTracking)
     {
-        StartTrack();
+        //StartTrack();
         m_bMouseTracking = true;
     }
-    bHandled = false;
+
+    //ATLTRACE(_T("  mouse point %d,%d\n"), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+    bHandled = TRUE;
     return 0;
 }
+
 
 LRESULT ATLButton::OnMouseHover(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
@@ -126,5 +162,22 @@ LRESULT ATLButton::OnMouseLeave(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     bHandled = false;
     m_bMouseTracking = false;
     m_bMouseWithin = false;
+    _mousepoint.x = -1;
+    _mousepoint.y = -1;
     return 0;
 }
+
+LRESULT ATLButton::OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    InOutlog(__FUNCTION__);
+    bHandled = false;
+    return 0;
+}
+
+LRESULT ATLButton::OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    InOutlog(__FUNCTION__);
+    bHandled = false;
+    return 0;
+}
+

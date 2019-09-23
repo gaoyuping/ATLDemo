@@ -3,16 +3,33 @@
 #include "LogInfo.h"
 #include <atlwin.h>
 
-ATLLabel::ATLLabel(ICallback* icallback)
-    :m_icallback(icallback)
+ATLLabel::ATLLabel(ICallback* icallback):
+    CComControlBase(m_hWnd),
+    m_icallback(icallback)
 {
     InOutlog(__FUNCTION__);
+    m_bWindowOnly = true;
 }
 
 
 ATLLabel::~ATLLabel()
 {
     InOutlog(__FUNCTION__);
+}
+
+
+HWND ATLLabel::CreateControlWindow(
+    _In_ HWND hWndParent,
+    _In_ RECT& rcPos)
+{
+    return 0;
+}
+
+HRESULT ATLLabel::ControlQueryInterface(
+    _In_ const IID& iid,
+    _Outptr_ void** ppv)
+{
+    return FALSE;
 }
 
 LRESULT ATLLabel::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -24,16 +41,19 @@ LRESULT ATLLabel::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
     rect.top = 0;
     rect.right = 100;
     rect.bottom = 50;
+    m_hWnd;
     //ATL::CWindowImpl<ATLLabel>::Create(m_hWnd, rect, _T("ATLLabel"));
+    //SubclassWindow(m_hWnd);
     return 0;
 }
 
 
 LRESULT ATLLabel::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    m_hWnd;
     InOutlog(__FUNCTION__);
     bHandled = false;
-
+    UnsubclassWindow();
     return 0;
 }
 
@@ -43,12 +63,13 @@ LRESULT ATLLabel::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
     InOutlog(__FUNCTION__);
     bHandled = false;
 
-    return 0;
+    return FALSE;
 }
 
 
 LRESULT ATLLabel::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    m_hWnd;
     InOutlog(__FUNCTION__);
     bHandled = false;
     GetClientRect(&m_rect);
@@ -80,3 +101,18 @@ LRESULT ATLLabel::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
     return 0;
 }
 
+LRESULT ATLLabel::OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    InOutlog(__FUNCTION__);
+    bHandled = false;
+
+    return FALSE;
+}
+
+LRESULT ATLLabel::OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    InOutlog(__FUNCTION__);
+    bHandled = false;
+
+    return FALSE;
+}
