@@ -217,6 +217,7 @@
     <ClCompile Include="ATLButton.cpp" />
     <ClCompile Include="ATLLabel.cpp" />
     <ClCompile Include="ATLMain.cpp" />
+    <ClCompile Include="ATLMenu.cpp" />
     <ClCompile Include="ATLProject1.cpp" />
     <ClCompile Include="ATLProject1_i.c">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
@@ -232,6 +233,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="ATLUIControl.cpp" />
     <ClCompile Include="LogInfo.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -244,7 +246,9 @@
     <ClInclude Include="ATLButton.h" />
     <ClInclude Include="ATLLabel.h" />
     <ClInclude Include="ATLMain.h" />
+    <ClInclude Include="ATLMenu.h" />
     <ClInclude Include="ATLProject1_i.h" />
+    <ClInclude Include="ATLUIControl.h" />
     <ClInclude Include="LogInfo.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />

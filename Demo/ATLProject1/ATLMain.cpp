@@ -4,7 +4,7 @@
 #include <atltypes.h>
 #include <WinUser.h>
 #include "LogInfo.h"
-
+#include "ATLMenu.h"
 
 ATLMain::ATLMain()
     :m_label(this)
@@ -26,14 +26,9 @@ LRESULT ATLMain::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
     rect.top = rect.bottom / 8;
     rect.right = rect.right / 4;
     rect.bottom = rect.bottom / 4;
-    //NULL, ATL::CWindow::rcDefault, _T("My Window"), WS_OVERLAPPEDWINDOW, WS_EX_CLIENTEDGE, nullptr
+
     HWND hwnd = nullptr;
-    HWND hwnd = m_label.Create(m_hWnd, rect, _T("ATLLabel"), WS_POPUPWINDOW);
-    //HWND hwnd = m_label.Create(nullptr, ATL::CWindow::rcDefault, _T("My Window"), WS_OVERLAPPEDWINDOW, WS_EX_CLIENTEDGE, nullptr);
-    // 显示并更新窗口
-    m_label.ShowWindow(TRUE);
-    m_label.UpdateWindow();
-    m_label.SetFocus();
+    hwnd = m_label.Create(m_hWnd, rect, _T("ATLLabel"), WS_CHILD | WS_VISIBLE);
 
     rect.left += 100;
     rect.top += 100;
@@ -61,7 +56,6 @@ LRESULT ATLMain::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled
     InOutlog(__FUNCTION__);
     ATLTRACE(_T("ATLMain::OnClose: wParam=%d size=(%d x %d)\n"), wParam, LOWORD(lParam), HIWORD(lParam));
 
-
     bHandled = false;
     return 0;
 }
@@ -71,9 +65,7 @@ LRESULT ATLMain::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     InOutlog(__FUNCTION__);
     ATLTRACE(_T("ATLMain::OnSize: wParam=%d size=(%d x %d)\n"), wParam, LOWORD(lParam), HIWORD(lParam));
 
-
     bHandled = false;
-
     return 0;
 }
 
@@ -84,21 +76,26 @@ LRESULT ATLMain::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled
 
     return 0;
 }
-
+#include <time.h>
 LRESULT ATLMain::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-
     InOutlog(__FUNCTION__);
     int ierroecode;
-    typedef int(*FUNC)(HWND);
+    typedef bool (*FUNC)(HWND);
+    TCHAR chCurDir[MAX_PATH] = { 0 };
+    GetCurrentDirectory(MAX_PATH, chCurDir);
 
-    HMODULE hDll = ::LoadLibrary(L"D:/code/Test/dll/qtdialog.dll");
+    //SetCurrentDirectory(_T("D:/code/Test/dll/"));
+    HMODULE hDll = ::LoadLibrary(L"qtdialog.dll");
+    //HMODULE hDll = ::LoadLibraryEx(L"D:/code/Test/dll/qtdialog.dll", NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
     ierroecode = GetLastError();
+    //SetCurrentDirectory(chCurDir);
     if (hDll != NULL) {
-        FUNC displayQML = (FUNC)GetProcAddress(hDll, "ShowDialog");
+        FUNC displayQML = (FUNC)GetProcAddress(hDll, "showDialog");
 
         if (displayQML != NULL) {
             displayQML(m_hWnd);
+            ATLTRACE(_T("  showDialog call end\n"));
         }
         else {
             ::MessageBox(NULL, L"can't found function", L"tips",MB_OK);
@@ -110,27 +107,56 @@ LRESULT ATLMain::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
     }
 
     bHandled = TRUE;
-
-    RECT rect;
-    GetClientRect(&rect);
-    rect.left = rect.right / 8;
-    rect.top = rect.bottom / 8;
-    rect.right = rect.right / 4;
-    rect.bottom = rect.bottom / 4;
-    //NULL, ATL::CWindow::rcDefault, _T("My Window"), WS_OVERLAPPEDWINDOW, WS_EX_CLIENTEDGE, nullptr
-
-    HWND hwnd = m_label.Create(m_hWnd, rect, _T("ATLLabel"), WS_POPUPWINDOW);
-    //HWND hwnd = m_label.Create(nullptr, ATL::CWindow::rcDefault, _T("My Window"), WS_OVERLAPPEDWINDOW, WS_EX_CLIENTEDGE, nullptr);
-    // 显示并更新窗口
-    m_label.ShowWindow(TRUE);
-    m_label.UpdateWindow();
-    m_label.SetFocus();
-
     return 0;
 }
 
-
-void ATLMain::OnCtrlCallback(ATLLabel* pCtrl)
+LRESULT ATLMain::OnRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    InOutlog(__FUNCTION__);
+    ATLMenu *ptrmenu = new ATLMenu(this);
+    CPoint point;
+    GetCursorPos(&point);
+    RECT rect;
+    rect.top = point.y;
+    rect.left = point.x;
+    rect.bottom = point.y + 50;
+    rect.right = point.x + 100;
+    ptrmenu->Create(m_hWnd, rect, _T("ATLMenu"), WS_POPUP);
+    {
+        ATLLabel *ptrctrl = new ATLLabel(this);
+        ptrctrl->setSize(100, 50);
+        ptrmenu->addItem(ptrctrl);
+    }
+    ATLTRACE(_T(" %s in\n"), _T("hhhhhhhhhhhhhhhhhhhhhhhhh"));
+    {
+        ATLButton *ptrctrl = new ATLButton(this);
+        ptrctrl->setSize(100, 50);
+        ptrmenu->addItem(ptrctrl);
+    }
+    ATLTRACE(_T(" %s in\n"), _T("ssssssssss"));
+    ptrmenu->ShowWindow(true);
+    ptrmenu->UpdateWindow();
+    //
+    bHandled = TRUE;
+    return 0;
+}
+LRESULT ATLMain::OnDeleteCtrl(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    InOutlog(__FUNCTION__);
+    bHandled = false;
+    if (WM_deleteCtrl == uMsg)
+    {
+        //delete (ATLControl*)wParam;
+    }
+    return FALSE;
+}
 
+void ATLMain::OnCtrlCallback(ATLControl* pCtrl)
+{
+    InOutlog(__FUNCTION__);
+    if (UIMenu == pCtrl->getStyle())
+    {
+        pCtrl->DestroyWindow();
+        ::PostMessage(m_hWnd, WM_deleteCtrl,(WPARAM)pCtrl,0 );
+    }
 }

@@ -3,13 +3,8 @@
 #include "LogInfo.h"
 #include <atlwin.h>
 
-ATLLabel::ATLLabel(ICallback* icallback)
-{
-    ATLLabel(UILabel, icallback);
-}
-
-ATLLabel::ATLLabel(ATLUISTYLE style, ICallback* icallback):
-    ATLControl(UILabel, icallback)
+ATLLabel::ATLLabel(ICallback* icallback):
+    m_icallback(icallback)
 {
     InOutlog(__FUNCTION__);
 }
@@ -77,8 +72,7 @@ LRESULT ATLLabel::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled
     GetClientRect(&m_rect);
     return 0;
 }
-#include <winuser.h>
-#define RGB(r,g,b)          ((COLORREF)(((BYTE)(r)|((WORD)((BYTE)(g))<<8))|(((DWORD)(BYTE)(b))<<16)))
+
 LRESULT ATLLabel::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     InOutlog(__FUNCTION__);

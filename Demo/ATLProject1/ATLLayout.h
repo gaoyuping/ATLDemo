@@ -4,20 +4,18 @@
 #include <atlctl.h>
 #include "ATLUIControl.h"
 
-class ATLLabel : public ATLControl
+class ATLLayout : public ATLControl
 {
 public:
-    ATLLabel(ICallback* icallback = nullptr);
-     virtual~ATLLabel();
-
+    ATLLayout(ICallback* icallback = nullptr);
+     virtual~ATLLayout();
 protected:
-    ATLLabel(ATLUISTYLE style, ICallback* icallback = nullptr);
     ICallback* m_icallback;
 
     CRect m_rect;
 public:
-    BEGIN_MSG_MAP(ATLLabel); // 利用宏实现ProcessWindowMessage函数，用以分发消息
-    CHAIN_MSG_MAP(ATLControl)
+    BEGIN_MSG_MAP(ATLLayout); // 利用宏实现ProcessWindowMessage函数，用以分发消息
+    CHAIN_MSG_MAP(ATLControl);
     END_MSG_MAP()
 
 public:

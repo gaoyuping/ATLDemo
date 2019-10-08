@@ -4,9 +4,12 @@
 class ATLButton :
     public ATLLabel
 {
+protected:
+    ATLButton(ATLUISTYLE style, ICallback* icallback = nullptr);
 public:
-    ATLButton();
+    ATLButton(ICallback* icallback = nullptr);
     ~ATLButton();
+public:
     BEGIN_MSG_MAP(ATLButton); // 利用宏实现ProcessWindowMessage函数，用以分发消息
     CHAIN_MSG_MAP(ATLLabel)
     MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLButtonDown);

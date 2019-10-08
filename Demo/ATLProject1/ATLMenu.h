@@ -3,27 +3,24 @@
 #include <atltypes.h>
 #include <atlctl.h>
 #include "ATLUIControl.h"
+#include <vector>
 
-class ATLLabel : public ATLControl
+class ATLMenu : public ATLControl
 {
 public:
-    ATLLabel(ICallback* icallback = nullptr);
-     virtual~ATLLabel();
-
+    ATLMenu(ICallback* icallback = nullptr);
+    virtual~ATLMenu();
+private:
+    ATLMenu(ATLUISTYLE style, ICallback* icallback = nullptr);
 protected:
-    ATLLabel(ATLUISTYLE style, ICallback* icallback = nullptr);
-    ICallback* m_icallback;
-
     CRect m_rect;
+private:
+    std::vector<ATLControl*> m_listCtrl;
 public:
-    BEGIN_MSG_MAP(ATLLabel); // 利用宏实现ProcessWindowMessage函数，用以分发消息
-    CHAIN_MSG_MAP(ATLControl)
+    BEGIN_MSG_MAP(ATLMenu); // 利用宏实现ProcessWindowMessage函数，用以分发消息
+    CHAIN_MSG_MAP(ATLControl);
     END_MSG_MAP()
 
-public:
-    // CComControlBase
-//     HWND CreateControlWindow(        _In_ HWND hWndParent,        _In_ RECT& rcPos);
-//     virtual HRESULT ControlQueryInterface(        _In_ const IID& iid,        _Outptr_ void** ppv);
 public:
     // Message handlers
     virtual LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -35,6 +32,7 @@ public:
     virtual LRESULT OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     virtual LRESULT OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 public:
-
+    bool addItem(ATLControl* ptrItem, int ipos = -1);
+    bool removeItem(const ATLControl* ptrItem);
 };
 

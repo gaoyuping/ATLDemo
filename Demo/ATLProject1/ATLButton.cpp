@@ -2,7 +2,16 @@
 #include "ATLButton.h"
 #include "LogInfo.h"
 
-ATLButton::ATLButton()
+ATLButton::ATLButton(ICallback* icallback):
+    ATLLabel(UIButton, icallback)
+{
+    InOutlog(__FUNCTION__);
+    m_bMouseTracking = false;
+    m_bMouseWithin = false;
+}
+
+ATLButton::ATLButton(ATLUISTYLE style, ICallback* icallback) :
+    ATLLabel(style, icallback)
 {
     InOutlog(__FUNCTION__);
     m_bMouseTracking = false;

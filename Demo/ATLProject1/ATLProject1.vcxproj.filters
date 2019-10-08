@@ -40,6 +40,12 @@
     <ClCompile Include="ATLButton.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="ATLUIControl.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ATLMenu.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -64,6 +70,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ATLButton.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ATLUIControl.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ATLMenu.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
