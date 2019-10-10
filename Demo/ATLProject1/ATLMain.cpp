@@ -5,7 +5,7 @@
 #include <WinUser.h>
 #include "LogInfo.h"
 #include "ATLMenu.h"
-
+extern HMODULE g_hDll;
 ATLMain::ATLMain()
     :m_label(this)
 {
@@ -86,12 +86,12 @@ LRESULT ATLMain::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
     GetCurrentDirectory(MAX_PATH, chCurDir);
 
     //SetCurrentDirectory(_T("D:/code/Test/dll/"));
-    HMODULE hDll = ::LoadLibrary(L"qtdialog.dll");
+    g_hDll = ::LoadLibrary(L"qtdialog.dll");
     //HMODULE hDll = ::LoadLibraryEx(L"D:/code/Test/dll/qtdialog.dll", NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
     ierroecode = GetLastError();
     //SetCurrentDirectory(chCurDir);
-    if (hDll != NULL) {
-        FUNC displayQML = (FUNC)GetProcAddress(hDll, "showDialog");
+    if (g_hDll != NULL) {
+        FUNC displayQML = (FUNC)GetProcAddress(g_hDll, "showDialog");
 
         if (displayQML != NULL) {
             displayQML(m_hWnd);
@@ -100,7 +100,6 @@ LRESULT ATLMain::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
         else {
             ::MessageBox(NULL, L"can't found function", L"tips",MB_OK);
         }
-        FreeLibrary(hDll);
     }
     else {
         ::MessageBox(NULL, L"can't found dll.", L"tips", MB_OK);

@@ -6,6 +6,7 @@
 #include "ATLProject1_i.h"
 #include "ATLMain.h"
 #include <time.h>
+HMODULE g_hDll = nullptr;
 
 extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/,
                                 LPTSTR /*lpCmdLine*/, int nShowCmd)
@@ -37,7 +38,14 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/
         TranslateMessage(&msg); // 消息循环 - 翻译键盘消息
         DispatchMessage(&msg); // 消息循环 - 分发消息
     }
-
+    if (g_hDll)
+    {
+        FreeLibrary(g_hDll);
+        int iret = GetLastError();
+        FreeLibrary(g_hDll);
+        iret = GetLastError();
+        g_hDll = nullptr;
+    }
     return (int)msg.wParam;
 }
 
