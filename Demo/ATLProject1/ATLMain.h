@@ -2,7 +2,7 @@
 #include "ATLLabel.h"
 #include "ATLButton.h"
 #include <atlwin.h>
-
+#define WM_test WM_USER + 1000
 class ATLMain : public ATL::CWindowImpl<ATLMain>
     ,public ICallback
 {
@@ -22,6 +22,8 @@ public:
     MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLButtonDown);
     MESSAGE_HANDLER(WM_RBUTTONDOWN, OnRButtonDown);
     MESSAGE_HANDLER(WM_deleteCtrl, OnDeleteCtrl);
+    MESSAGE_HANDLER(WM_test, OnTest);
+    COMMAND_ID_HANDLER(WM_test, OnCmdNewNotebook);
     END_MSG_MAP()
 
 public:
@@ -34,6 +36,8 @@ public:
     LRESULT OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnDeleteCtrl(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnCmdNewNotebook(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //ICallback
     void OnCtrlCallback(ATLControl* pCtrl);
 };

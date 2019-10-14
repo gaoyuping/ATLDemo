@@ -77,6 +77,9 @@ LRESULT ATLMain::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled
     return 0;
 }
 #include <time.h>
+//#define Initdata
+//#define sendmsg
+#define showDialog
 LRESULT ATLMain::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     InOutlog(__FUNCTION__);
@@ -91,6 +94,8 @@ LRESULT ATLMain::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
     ierroecode = GetLastError();
     //SetCurrentDirectory(chCurDir);
     if (g_hDll != NULL) {
+#ifdef showDialog
+        ATLTRACE(_T(" %s in\n"), _T("showDialog"));
         FUNC displayQML = (FUNC)GetProcAddress(g_hDll, "showDialog");
 
         if (displayQML != NULL) {
@@ -98,8 +103,40 @@ LRESULT ATLMain::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
             ATLTRACE(_T("  showDialog call end\n"));
         }
         else {
-            ::MessageBox(NULL, L"can't found function", L"tips",MB_OK);
+            ::MessageBox(NULL, L"can't found showDialog function", L"tips", MB_OK);
         }
+        ATLTRACE(_T(" %s out\n"), _T("showDialog"));
+#endif
+
+#ifdef Initdata
+        ATLTRACE(_T(" %s in\n"), _T("Initdata"));
+        FUNC displayQML_InitData = (FUNC)GetProcAddress(g_hDll, "InitData");
+
+        if (displayQML_InitData != NULL) {
+            displayQML_InitData(m_hWnd);
+            ATLTRACE(_T("  InitData call end\n"));
+        }
+        else {
+            ::MessageBox(NULL, L"can't found InitData function", L"tips", MB_OK);
+        }
+        ATLTRACE(_T(" %s out\n"), _T("Initdata"));
+#endif
+
+#ifdef sendmsg
+        ATLTRACE(_T(" %s in\n"), _T("sendmsg"));
+        typedef bool(*FUNC_sendmsg)();
+        FUNC_sendmsg displayQML_sendmsg = (FUNC_sendmsg)GetProcAddress(g_hDll, "sendmsg");
+
+        if (displayQML_sendmsg != NULL) {
+            displayQML_sendmsg();
+            ATLTRACE(_T("  InitData call end\n"));
+        }
+        else {
+            ::MessageBox(NULL, L"can't found sendmsg function", L"tips", MB_OK);
+        }
+        ATLTRACE(_T(" %s out\n"), _T("sendmsg"));
+#endif
+
     }
     else {
         ::MessageBox(NULL, L"can't found dll.", L"tips", MB_OK);
@@ -150,6 +187,19 @@ LRESULT ATLMain::OnDeleteCtrl(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHa
     return FALSE;
 }
 
+LRESULT ATLMain::OnTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    InOutlog(__FUNCTION__);
+    bHandled = false;
+
+    return FALSE;
+}
+
+LRESULT ATLMain::OnCmdNewNotebook(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)     {
+    InOutlog(__FUNCTION__);
+    bHandled = false;
+
+    return FALSE;
+}
 void ATLMain::OnCtrlCallback(ATLControl* pCtrl)
 {
     InOutlog(__FUNCTION__);
