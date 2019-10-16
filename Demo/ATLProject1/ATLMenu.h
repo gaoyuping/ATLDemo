@@ -11,10 +11,13 @@ public:
 
     ATLMenu(ICallback* icallback = nullptr);
     virtual~ATLMenu();
+    void setSpace(int ispace = 0);
+protected:
+    int m_iSpace;
+
 private:
     ATLMenu(ATLUISTYLE style, ICallback* icallback = nullptr);
-protected:
-    CRect m_rect;
+
 private:
     std::vector<ATLControl*> m_listCtrl;
 public:

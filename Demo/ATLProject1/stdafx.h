@@ -16,6 +16,12 @@
 
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS    // 某些 CString 构造函数将是显式的
 
+#define _WTL_NO_CSTRING
+#include <atlstr.h>
+#define _WTL_NO_WTYPES
+#include <atltypes.h>
+#include <atlfile.h>
+#include <comsvcs.h>
 
 #define ATL_NO_ASSERT_ON_DESTROY_NONEXISTENT_WINDOW
 #include <atlbase.h>
@@ -27,5 +33,6 @@
 #include <atlbase.h>
 #include <atlcom.h>
 #include <atlctl.h>
+
 
 #pragma warning (disable:4100)

@@ -7,12 +7,24 @@ ATLMenu::ATLMenu(ICallback* icallback) :
     ATLControl(UIMenu, icallback)
 {
     InOutlog(__FUNCTION__);
+    m_cName = "ATLMenu";
+    m_iBorderBotton = 1;
+    m_iBorderLeft = 1;
+    m_iBorderTop = 1;
+    m_iBorderRight = 1;
+    m_iSpace = 0;
 }
 
 ATLMenu::ATLMenu(ATLUISTYLE style, ICallback* icallback) :
     ATLControl(style, icallback)
 {
     InOutlog(__FUNCTION__);
+    m_cName = "ATLMenu";
+    m_iBorderBotton = 1;
+    m_iBorderLeft = 1;
+    m_iBorderTop = 1;
+    m_iBorderRight = 1;
+    m_iSpace = 0;
 }
 
 ATLMenu::~ATLMenu()
@@ -28,6 +40,11 @@ ATLMenu::~ATLMenu()
         ptrctrl->DestroyWindow();
         delete ptrctrl;
     }
+}
+
+void ATLMenu::setSpace(int ispace)
+{
+    m_iSpace = ispace;
 }
 
 LRESULT ATLMenu::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -65,11 +82,17 @@ LRESULT ATLMenu::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     int ih = 0;
     for (std::vector<ATLControl*>::iterator iter = m_listCtrl.begin(); iter != m_listCtrl.end(); iter++)
     {
+        if (ih > 0)
+        {
+            ih += m_iSpace;
+        }
         ATLTRACE(_T("%d  x=%d y=%d  out\n"), 0,0, ih);
-        (*iter)->MoveWindow(0, ih, (*iter)->getWidth(), (*iter)->getHeight());
+        (*iter)->MoveWindow(m_iBorderLeft, m_iBorderTop +  ih, (*iter)->getWidth(), (*iter)->getHeight());
         iw = iw > (*iter)->getWidth()? iw : (*iter)->getWidth();
-        ih += (*iter)->getHeight() + 1;
+        ih += (*iter)->getHeight();
     }
+    ih = ih + m_iBorderTop + m_iBorderBotton;
+    iw = iw + m_iBorderRight + m_iBorderLeft;
     if (iw == 0 || ih == 0)
     {
         GetClientRect(&m_rect);
@@ -96,21 +119,8 @@ LRESULT ATLMenu::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 LRESULT ATLMenu::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     InOutlog(__FUNCTION__);
-    CPaintDC dc(m_hWnd);
-    POINT beginpoint;
-    beginpoint.x = 0;
-    beginpoint.y = 0;
 
-    CRect rect = m_rect;
-    rect.MoveToX(1);
-    rect.MoveToY(1);
-    rect.right = m_rect.right - 2;
-    rect.bottom = m_rect.bottom - 2;
-    int iret;
-    iret = dc.DrawText(_T("ATLMenu"), -1, rect, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
-
-    bHandled = TRUE;
-    return 0;
+    return __super::OnPaint(uMsg, wParam, lParam, bHandled);;
 }
 
 LRESULT ATLMenu::OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

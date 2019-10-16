@@ -1,7 +1,6 @@
 #pragma once
-#include <atlwin.h>
-#include <atltypes.h>
-#include <atlctl.h>
+#include "stdafx.h"
+
 #define  WM_deleteCtrl WM_USER+1000
 
 #define RGB(r,g,b)          ((COLORREF)(((BYTE)(r)|((WORD)((BYTE)(g))<<8))|(((DWORD)(BYTE)(b))<<16)))
@@ -24,6 +23,7 @@ enum ATLUISTYLE
     UIMenu,
     UILayout,
 };
+
 class ATLControl : public ATL::CWindowImpl<ATLControl>
 {
 public:
@@ -31,17 +31,33 @@ public:
      virtual~ATLControl();
 protected:
     ICallback* m_icallback;
-
+    ATL::CString m_cName;
     CRect m_rect;
 protected:
     ATLUISTYLE m_style;
 
     int m_iwidth;
     int m_iheight;
+
+    int m_iBorderTop;
+    int m_iBorderRight;
+    int m_iBorderBotton;
+    int m_iBorderLeft;
+    COLORREF m_borderColor;
+    COLORREF m_backgroundColor;
 public:
     ATLUISTYLE getStyle();
+    
     void setSize(int iw, int ih);
+
+    void setBorderSize(int itop, int iright, int ibotton, int ileft);
+    
+    void setBorderColor(COLORREF bordercolor);
+
+    void setBackgroundColor(COLORREF bordercolor);
+
     int getWidth();
+    
     int getHeight();
 public:
     BEGIN_MSG_MAP(ATLControl); // 利用宏实现ProcessWindowMessage函数，用以分发消息
@@ -70,5 +86,9 @@ public:
     virtual LRESULT OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     virtual LRESULT OnDeleteCtrl(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     
+
+protected:
+    inline void DrawBorder(CPaintDC &dc);
+    inline void DrawBackgroundColor(CPaintDC &dc);
 };
 

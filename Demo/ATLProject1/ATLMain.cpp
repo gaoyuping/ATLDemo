@@ -23,20 +23,18 @@ LRESULT ATLMain::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
     //m_label.Create();
     RECT rect;
     GetClientRect(&rect);
-    rect.left = rect.right / 8;
-    rect.top = rect.bottom / 8;
-    rect.right = rect.right / 4;
-    rect.bottom = rect.bottom / 4;
+    rect.left = 100;
+    rect.top = 50;
+    rect.right = 300;
+    rect.bottom = 150;
 
     HWND hwnd = nullptr;
     hwnd = m_label.Create(m_hWnd, rect, _T("ATLLabel"), WS_CHILD | WS_VISIBLE);
-
-    rect.left += 100;
-    rect.top += 100;
-    rect.right += 100;
-    rect.bottom +=  100;
+    m_label.setBorderSize(1, 1, 1, 1);
+    rect.top += 110;
+    rect.bottom +=  110;
     hwnd = m_btn.Create(m_hWnd, rect, _T("ATLButton"), WS_CHILD | WS_VISIBLE);
-
+    m_btn.setBorderSize(2, 2, 2, 2);
     bHandled = false;
 
     long lStyle;

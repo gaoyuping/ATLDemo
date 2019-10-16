@@ -40,12 +40,9 @@ public:
     MESSAGE_HANDLER(WM_deleteCtrl, OnDeleteCtrl);
     MESSAGE_HANDLER(WM_test, OnTest);
     MESSAGE_HANDLER(WM_INITMENUPOPUP, OnInitMenuPopup);
-    
     COMMAND_ID_HANDLER(ID_STYLE_QT, OnMenuClick);
     COMMAND_ID_HANDLER(ID_STYLE_ATL, OnMenuClick);
-
     COMMAND_ID_HANDLER(WM_test, OnCmdNewNotebook);
-
     END_MSG_MAP()
 
 public:

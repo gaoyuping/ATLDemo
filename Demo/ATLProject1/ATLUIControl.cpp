@@ -3,12 +3,21 @@
 #include "LogInfo.h"
 #include <atlwin.h>
 #include <winuser.h>
+#include <atlgdiraii.h>
 
-ATLControl::ATLControl(ATLUISTYLE style,ICallback* icallback) :
+#define DefaultBroder 1
+ATLControl::ATLControl(ATLUISTYLE style, ICallback* icallback) :
     m_icallback(icallback),
     m_style(style),
     m_iwidth(-1),
-    m_iheight(-1)
+    m_iheight(-1),
+    m_iBorderTop(DefaultBroder),
+    m_iBorderRight(DefaultBroder),
+    m_iBorderBotton(DefaultBroder),
+    m_iBorderLeft(DefaultBroder),
+    m_cName("ATLControl"),
+    m_borderColor(RGB(0,0, 0)),
+    m_backgroundColor(RGB(255, 0, 255))
 {
     InOutlog(__FUNCTION__);
 }
@@ -27,6 +36,23 @@ void ATLControl::setSize(int iw, int ih)
 {
     m_iwidth = iw;
     m_iheight = 50;
+}
+
+void ATLControl::setBorderSize(int itop, int iright, int ibotton, int ileft)
+{
+    m_iBorderTop = itop;
+    m_iBorderRight = itop;
+    m_iBorderBotton = itop;
+    m_iBorderLeft = itop;
+}
+
+void ATLControl::setBorderColor(COLORREF bordercolor)
+{
+    m_borderColor = bordercolor;
+}
+
+void ATLControl::setBackgroundColor(COLORREF bordercolor) {
+    m_backgroundColor = bordercolor;
 }
 
 int ATLControl::getWidth()
@@ -86,22 +112,18 @@ LRESULT ATLControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 {
     InOutlog(__FUNCTION__);
     CPaintDC dc(m_hWnd);
-    POINT beginpoint;
-    beginpoint.x = 0;
-    beginpoint.y = 0;
-    dc.MoveTo(beginpoint);
-    dc.LineTo(m_rect.Width()-1, 0);
-    dc.LineTo(m_rect.Width()-1, m_rect.Height()-1);
-    dc.LineTo(0, m_rect.Height() - 1);
-    dc.LineTo(beginpoint);
+
+    DrawBackgroundColor(dc);
+    DrawBorder(dc);
+
     CRect rect = m_rect;
     rect.MoveToX(1);
     rect.MoveToY(1);
     rect.right = m_rect.right - 2;
     rect.bottom = m_rect.bottom - 2;
     int iret;
-    iret = dc.DrawText(_T("ATLControl"), -1, rect, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
-    
+    iret = dc.DrawText(m_cName, -1, rect, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+
     bHandled = TRUE;
     return 0;
 }
@@ -128,4 +150,70 @@ LRESULT ATLControl::OnDeleteCtrl(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     bHandled = false;
 
     return FALSE;
+}
+
+void ATLControl::DrawBorder(CPaintDC &dc)
+{
+    int irightHelf = 0;
+    int ibottonHelf = 0;
+    if (m_iBorderTop > 0)
+    {
+        CPen penLt;
+        penLt.CreatePen(PS_SOLID, m_iBorderTop, m_borderColor);
+        CSelectPen selectLtPen(dc, penLt);
+        dc.MoveTo(0 , m_iBorderTop / 2);
+        dc.LineTo(m_rect.Width(), m_iBorderTop / 2);
+    }
+
+    if (m_iBorderRight > 0)
+    {
+        if (m_iBorderRight % 2 && m_iBorderRight > 1) {
+            irightHelf = m_iBorderRight / 2 - 1;
+        }
+        else {
+            irightHelf = m_iBorderRight / 2;
+        }
+
+        CPen penLt;
+        penLt.CreatePen(PS_SOLID, m_iBorderRight, m_borderColor);
+        CSelectPen selectLtPen(dc, penLt);
+        dc.MoveTo(m_rect.Width() - irightHelf - 1, 0);
+        dc.LineTo(m_rect.Width() - irightHelf - 1, m_rect.Height());
+    }
+
+    if (m_iBorderBotton > 0)
+    {
+        if (m_iBorderBotton % 2 && m_iBorderBotton > 1) {
+            ibottonHelf = m_iBorderBotton / 2 - 1;
+        }
+        else {
+            ibottonHelf = m_iBorderBotton / 2;
+        }
+        CPen penLt;
+        penLt.CreatePen(PS_SOLID, m_iBorderBotton, m_borderColor);
+        CSelectPen selectLtPen(dc, penLt);
+        dc.MoveTo(0, m_rect.Height() - ibottonHelf);
+        dc.LineTo(m_rect.Width(), m_rect.Height() - ibottonHelf);
+    }
+
+    if (m_iBorderLeft > 0)
+    {
+        CPen penLt;
+        penLt.CreatePen(PS_SOLID, m_iBorderLeft, m_borderColor);
+        CSelectPen selectLtPen(dc, penLt);
+        dc.MoveTo(m_iBorderLeft / 2, 0);
+        dc.LineTo(m_iBorderLeft / 2, m_rect.Height());
+    }
+}
+
+void ATLControl::DrawBackgroundColor(CPaintDC &dc)
+{
+    CBrush brush;
+    brush.CreateSolidBrush(m_backgroundColor);
+    CRect rect;
+    rect.top = m_rect.top + m_iBorderTop ;
+    rect.left = m_rect.left + m_iBorderLeft;
+    rect.bottom = m_rect.bottom - m_iBorderBotton;
+    rect.right = m_rect.right - m_iBorderRight;
+    dc.FillRect(&rect, brush);
 }
