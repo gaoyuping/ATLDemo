@@ -35,7 +35,6 @@ LRESULT ATLMenu::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
     InOutlog(__FUNCTION__);
     bHandled = false;
     DWORD wStyle = GetWndStyle(0);
-
     return 0;
 }
 
@@ -66,26 +65,31 @@ LRESULT ATLMenu::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     int ih = 0;
     for (std::vector<ATLControl*>::iterator iter = m_listCtrl.begin(); iter != m_listCtrl.end(); iter++)
     {
-        (*iter)->MoveWindow(0, iw, (*iter)->getWidth(), (*iter)->getHeight());
+        ATLTRACE(_T("%d  x=%d y=%d  out\n"), 0,0, ih);
+        (*iter)->MoveWindow(0, ih, (*iter)->getWidth(), (*iter)->getHeight());
         iw = iw > (*iter)->getWidth()? iw : (*iter)->getWidth();
-        ih += (*iter)->getHeight();
+        ih += (*iter)->getHeight() + 1;
     }
-//     if (iw == 0 || ih == 0)
-//     {
-//         GetClientRect(&m_rect);
-//         m_iheight = m_rect.Height();
-//         m_iwidth = m_rect.Width();
-//     }
-//     else
-//     {
-//         if (m_iheight == ih && m_iwidth == iw)
-//         {
-//             return 0;
-//         }
-//         m_iheight = ih;
-//         m_iwidth = iw;
-//     }
-    //ResizeClient(m_iwidth, m_iheight);
+    if (iw == 0 || ih == 0)
+    {
+        GetClientRect(&m_rect);
+        m_iheight = m_rect.Height();
+        m_iwidth = m_rect.Width();
+    }
+    else
+    {
+        if (m_iheight == ih && m_iwidth == iw)
+        {
+            ::PostMessage(m_hWnd, WM_PAINT, 0, 0);
+            return 0;
+        }
+        m_iheight = ih;
+        m_iwidth = iw;
+        m_rect.right = m_rect.left + m_iwidth;
+        m_rect.bottom = m_rect.top + m_iheight;
+    }
+    ResizeClient(m_iwidth, m_iheight);
+ 
     return 0;
 }
 

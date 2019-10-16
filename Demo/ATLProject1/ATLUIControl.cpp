@@ -42,6 +42,7 @@ LRESULT ATLControl::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 {
     InOutlog(__FUNCTION__);
     bHandled = false;
+
     return 0;
 }
 

@@ -8,6 +8,7 @@
 class ATLMenu : public ATLControl
 {
 public:
+
     ATLMenu(ICallback* icallback = nullptr);
     virtual~ATLMenu();
 private:

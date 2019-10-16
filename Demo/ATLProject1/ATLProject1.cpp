@@ -7,10 +7,11 @@
 #include "ATLMain.h"
 #include <time.h>
 HMODULE g_hDll = nullptr;
-
+HINSTANCE g_hInstance = nullptr;
 extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/,
                                 LPTSTR /*lpCmdLine*/, int nShowCmd)
 {
+    g_hInstance = hInstance;
     MSG msg;
     bool nCmdShow = true;
     //hInst = hInstance; // 将实例句柄存储在全局变量中
