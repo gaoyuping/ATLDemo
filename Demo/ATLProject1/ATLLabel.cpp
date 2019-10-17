@@ -2,16 +2,20 @@
 #include "ATLLabel.h"
 #include "LogInfo.h"
 #include <atlwin.h>
-
+#include <atlgdiraii.h>
+#include <Render.h>
+extern HINSTANCE g_hInstance;
 ATLLabel::ATLLabel(ICallback* icallback) :
-    ATLControl(UILabel, icallback)
+    ATLControl(UILabel, icallback),
+    m_image(nullptr)
 {
     InOutlog(__FUNCTION__);
     m_cText = "ATLLabel";
 }
 
 ATLLabel::ATLLabel(ATLUISTYLE style, ICallback* icallback):
-    ATLControl(style, icallback)
+    ATLControl(style, icallback),
+    m_image(nullptr)
 {
     InOutlog(__FUNCTION__);
     m_cText = "ATLLabel";
@@ -22,6 +26,25 @@ ATLLabel::~ATLLabel()
 {
     InOutlog(__FUNCTION__);
     m_cText = "ATLLabel";
+}
+
+bool ATLLabel::LoadImage(int Resourceid, int index, int imageCount) {
+    ASSERT(index < imageCount);
+
+    FreeImage(); 
+    ASSERT(!m_image);
+
+    m_image = new ATL::CImage;
+    m_image->LoadFromResource(g_hInstance, Resourceid);
+
+    return true;
+}
+
+void ATLLabel::FreeImage() {
+    if (m_image) {
+        delete m_image;
+        m_image = NULL;
+    }
 }
 
 LRESULT ATLLabel::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -60,8 +83,15 @@ LRESULT ATLLabel::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled
 LRESULT ATLLabel::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     InOutlog(__FUNCTION__);
+    CPaintDC dc(m_hWnd);
 
-    return __super::OnPaint(uMsg, wParam, lParam, bHandled);
+    DrawBackgroundColor(dc);
+    DrawBorder(dc);
+    if (m_image) 
+        DrawPic(dc);
+    DrawText(dc);
+    bHandled = True;
+    return bHandled;
 }
 
 LRESULT ATLLabel::OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -78,4 +108,52 @@ LRESULT ATLLabel::OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHa
     bHandled = false;
 
     return FALSE;
+}
+
+void ATLLabel::DrawText(CPaintDC &dc)
+{
+    if (m_image) {
+        CRect rect;
+        rect.top = m_rect.top + m_iBorderTop;
+        rect.left = m_rect.left + m_iBorderLeft + m_image->GetWidth();
+        rect.bottom = m_rect.bottom - m_iBorderBotton;
+        rect.right = m_rect.right - m_iBorderRight;
+        int iret;
+        CSetBkMode setBkMode(dc, TRANSPARENT);
+        CSetTextColor setTextColor(dc, m_textColor);
+        iret = dc.DrawText(m_cText, -1, rect, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
+    }
+    else
+    {
+        CRect rect;
+        rect.top = m_rect.top + m_iBorderTop;
+        rect.left = m_rect.left + m_iBorderLeft;
+        rect.bottom = m_rect.bottom - m_iBorderBotton;
+        rect.right = m_rect.right - m_iBorderRight;
+        int iret;
+        CSetBkMode setBkMode(dc, TRANSPARENT);
+        CSetTextColor setTextColor(dc, m_textColor);
+        iret = dc.DrawText(m_cText, -1, rect, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+    }
+}
+
+void ATLLabel::DrawPic(CPaintDC &dc)
+{
+    if (m_image)
+    {
+        CRect rect;
+        rect.top = m_rect.top + m_iBorderTop;
+        rect.left = m_rect.left + m_iBorderLeft;
+        rect.bottom = m_rect.top + m_image->GetWidth() + 1;
+        rect.right = m_rect.left + m_image->GetWidth() + 1;
+        if (rect.bottom >= m_rect.Height() - m_iBorderBotton)
+        {
+            rect.bottom = m_rect.Height() - m_iBorderBotton - 1;
+        }
+        if (rect.Width() > m_rect.Width() - m_iBorderRight) {
+            rect.right = m_rect.Width() - m_iBorderRight - 1;
+        }
+        //CRender::Image(dc.m_hDC,rect.top, rect.left, rect.right, rect.bottom, m_image->GetDC(),0,0,m_image->GetWidth(),m_image->GetHeight());
+        CRender::Image(dc.m_hDC, rect.top, rect.left, rect.right, rect.bottom, *m_image, 0, 0, m_image->GetWidth(), m_image->GetHeight());
+    }
 }

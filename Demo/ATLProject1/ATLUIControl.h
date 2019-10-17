@@ -31,7 +31,7 @@ public:
      virtual~ATLControl();
 protected:
     ICallback* m_icallback;
-    ATL::CString m_cText;
+    CString m_cText;
     CRect m_rect;
 protected:
     ATLUISTYLE m_style;
@@ -59,7 +59,7 @@ public:
 
     void setBackgroundColor(COLORREF bordercolor);
 
-    void seText(ATL::CString ctext);
+    void seText(CString ctext);
 
     int getWidth();
     
@@ -93,8 +93,8 @@ public:
     
 
 protected:
-    inline void DrawBorder(CPaintDC &dc);
-    inline void DrawBackgroundColor(CPaintDC &dc);
-    inline void DrawText(CPaintDC &dc);
+    virtual void DrawBorder(CPaintDC &dc);
+    virtual void DrawBackgroundColor(CPaintDC &dc);
+    virtual void DrawText(CPaintDC &dc);
 };
 

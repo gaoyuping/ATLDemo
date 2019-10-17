@@ -61,7 +61,7 @@ void ATLControl::setBackgroundColor(COLORREF bordercolor) {
     m_backgroundColor = bordercolor;
 }
 
-void ATLControl::seText(ATL::CString ctext)
+void ATLControl::seText(CString ctext)
 {
     m_cText = ctext;
 }

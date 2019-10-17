@@ -30,22 +30,6 @@ bool ATLButton::IsWantedMessage(UINT uMsg)
     switch (uMsg) {
     case WM_SETFOCUS:
     case WM_KILLFOCUS:
-//     case WM_LBUTTONDOWN:
-//     case WM_LBUTTONDBLCLK:
-//     case WM_LBUTTONUP:
-//     case WM_RBUTTONDOWN:
-//     case WM_RBUTTONDBLCLK:
-//     case WM_RBUTTONUP:
-//     case WM_MOUSEMOVE:
-//     case WM_MOUSELEAVE:
-//     case WM_CAPTURECHANGED:
-//     case WM_KEYDOWN:
-//     case WM_CONTEXTMENU:
-//     case WM_COMMAND:
-//     case WM_TIMER:
-//     case WM_CREATE:
-//     case WM_DESTROY:
-//     case WM_CHAR:
         return true;
     }
 

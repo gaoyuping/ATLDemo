@@ -3,15 +3,24 @@
 #include <atltypes.h>
 #include <atlctl.h>
 #include "ATLUIControl.h"
-
+#include <atlimage.h>
+enum IMAGENUMER {
+    NO_IMAGE,
+};
 class ATLLabel : public ATLControl
 {
 public:
     ATLLabel(ICallback* icallback = nullptr);
      virtual~ATLLabel();
 
+     bool LoadImage(int Resourceid, int index = 0, int imageCount = 1);
+
+     void FreeImage();
+
 protected:
     ATLLabel(ATLUISTYLE style, ICallback* icallback = nullptr);
+
+    ATL::CImage* m_image;
 public:
     BEGIN_MSG_MAP(ATLLabel); // 利用宏实现ProcessWindowMessage函数，用以分发消息
     CHAIN_MSG_MAP(ATLControl)
@@ -32,6 +41,8 @@ public:
     virtual LRESULT OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     virtual LRESULT OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 public:
+    void DrawText(CPaintDC &dc) override;
 
+    virtual void DrawPic(CPaintDC &dc);
 };
 

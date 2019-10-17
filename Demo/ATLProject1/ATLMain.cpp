@@ -5,17 +5,22 @@
 #include <WinUser.h>
 #include "LogInfo.h"
 #include "ATLMenu.h"
+#include "Resource.h"
+
 extern HMODULE g_hDll;
 extern HINSTANCE g_hInstance;
+
 ATLMain::ATLMain()
     :m_label(this), m_style(menu_ATL)
 {
 
 }
+
 ATLMain::~ATLMain()
 {
 
 }
+
 LRESULT ATLMain::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     InOutlog(__FUNCTION__);
@@ -32,6 +37,7 @@ LRESULT ATLMain::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
     hwnd = m_label.Create(m_hWnd, rect, _T("ATLLabel"), WS_CHILD | WS_VISIBLE);
     m_label.setBorderSize(1, 1, 1, 1);
     m_label.seText(_T("ATLLabel"));
+    m_label.LoadImageW(IDB_BITMAP1);
     rect.top += 60;
     rect.bottom += 60;
     hwnd = m_btn.Create(m_hWnd, rect, _T("ATLButton"), WS_CHILD | WS_VISIBLE);
@@ -201,19 +207,14 @@ LRESULT ATLMain::OnRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
             ptrctrl->Create(ptrmenu->m_hWnd);
             ptrctrl->setSize(100, 50);
             ptrmenu->addItem(ptrctrl);
-            if (!::IsWindow(ptrctrl->m_hWnd)) {
-                int ii = 0;
-            }
         }
         ATLTRACE(_T(" %s in\n"), _T("hhhhhhhhhhhhhhhhhhhhhhhhh"));
         {
             ATLButton *ptrctrl = new ATLButton(this);
             ptrctrl->Create(ptrmenu->m_hWnd);
             ptrctrl->setSize(100, 50);
+            ptrctrl->LoadImageW(IDB_BITMAP1);
             ptrmenu->addItem(ptrctrl);
-            if (!::IsWindow(ptrctrl->m_hWnd)) {
-                int ii = 0;
-            }
         }
         ATLTRACE(_T(" %s in\n"), _T("ssssssssss"));
         ptrmenu->ShowWindow(true);

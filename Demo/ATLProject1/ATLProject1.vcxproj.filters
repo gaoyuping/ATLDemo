@@ -46,6 +46,12 @@
     <ClCompile Include="ATLMenu.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="WTL\Render.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="WTL\DCCache.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -78,6 +84,15 @@
     <ClInclude Include="ATLMenu.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="WTL\Render.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="WTL\DCCache.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="WTL\Common.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ATLProject1.rc">
@@ -93,5 +108,10 @@
     <Midl Include="ATLProject1.idl">
       <Filter>源文件</Filter>
     </Midl>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="bitmap1.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>
