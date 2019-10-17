@@ -3,23 +3,25 @@
 #include "LogInfo.h"
 #include <atlwin.h>
 
-ATLLabel::ATLLabel(ICallback* icallback)
-{
-    ATLLabel(UILabel, icallback);
-}
-
-ATLLabel::ATLLabel(ATLUISTYLE style, ICallback* icallback):
+ATLLabel::ATLLabel(ICallback* icallback) :
     ATLControl(UILabel, icallback)
 {
     InOutlog(__FUNCTION__);
-    m_cName = "ATLLabel";
+    m_cText = "ATLLabel";
+}
+
+ATLLabel::ATLLabel(ATLUISTYLE style, ICallback* icallback):
+    ATLControl(style, icallback)
+{
+    InOutlog(__FUNCTION__);
+    m_cText = "ATLLabel";
 }
 
 
 ATLLabel::~ATLLabel()
 {
     InOutlog(__FUNCTION__);
-    m_cName = "ATLLabel";
+    m_cText = "ATLLabel";
 }
 
 LRESULT ATLLabel::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

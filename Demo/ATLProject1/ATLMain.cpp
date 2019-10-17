@@ -25,16 +25,29 @@ LRESULT ATLMain::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
     GetClientRect(&rect);
     rect.left = 100;
     rect.top = 50;
-    rect.right = 300;
-    rect.bottom = 150;
+    rect.right = 200;
+    rect.bottom = 100;
 
     HWND hwnd = nullptr;
     hwnd = m_label.Create(m_hWnd, rect, _T("ATLLabel"), WS_CHILD | WS_VISIBLE);
     m_label.setBorderSize(1, 1, 1, 1);
-    rect.top += 110;
-    rect.bottom +=  110;
+    m_label.seText(_T("ATLLabel"));
+    rect.top += 60;
+    rect.bottom += 60;
     hwnd = m_btn.Create(m_hWnd, rect, _T("ATLButton"), WS_CHILD | WS_VISIBLE);
     m_btn.setBorderSize(2, 2, 2, 2);
+
+    for (int i = 3; i < 11; i++)
+    {
+        ATLButton* ptr = new ATLButton(this);
+        m_btnlist.push_back(ptr);
+        rect.top += 60;
+        rect.bottom += 60;
+        hwnd = ptr->Create(m_hWnd, rect, _T("ATLButton"), WS_CHILD | WS_VISIBLE);
+        ptr->seText(_T("ATLButton"));
+        ptr->setBorderSize(i, i, i, i);
+    }
+
     bHandled = false;
 
     long lStyle;

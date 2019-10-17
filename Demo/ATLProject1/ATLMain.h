@@ -4,6 +4,8 @@
 #include <atlwin.h>
 #include <WinUser.h>
 #include <atlframe.h>
+#include <vector>
+
 
 #define WM_test WM_USER + 1000
 enum menuStyle{
@@ -21,7 +23,7 @@ public:
 private:
     ATLLabel m_label;
     ATLButton m_btn;
-
+    std::vector<ATLButton*> m_btnlist;
     HMENU m_hMenu;
     CMenuHandle m_hmenuHandle;
     menuStyle m_style;

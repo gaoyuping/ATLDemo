@@ -7,7 +7,7 @@ ATLMenu::ATLMenu(ICallback* icallback) :
     ATLControl(UIMenu, icallback)
 {
     InOutlog(__FUNCTION__);
-    m_cName = "ATLMenu";
+    m_cText = "ATLMenu";
     m_iBorderBotton = 1;
     m_iBorderLeft = 1;
     m_iBorderTop = 1;
@@ -19,7 +19,7 @@ ATLMenu::ATLMenu(ATLUISTYLE style, ICallback* icallback) :
     ATLControl(style, icallback)
 {
     InOutlog(__FUNCTION__);
-    m_cName = "ATLMenu";
+    m_cText = "ATLMenu";
     m_iBorderBotton = 1;
     m_iBorderLeft = 1;
     m_iBorderTop = 1;

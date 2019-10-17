@@ -8,7 +8,7 @@ ATLButton::ATLButton(ICallback* icallback):
     InOutlog(__FUNCTION__);
     m_bMouseTracking = false;
     m_bMouseWithin = false;
-    m_cName = "ATLButton";
+    m_cText = "ATLButton";
 }
 
 ATLButton::ATLButton(ATLUISTYLE style, ICallback* icallback) :
@@ -17,7 +17,7 @@ ATLButton::ATLButton(ATLUISTYLE style, ICallback* icallback) :
     InOutlog(__FUNCTION__);
     m_bMouseTracking = false;
     m_bMouseWithin = false;
-    m_cName = "ATLButton";
+    m_cText = "ATLButton";
 }
 
 

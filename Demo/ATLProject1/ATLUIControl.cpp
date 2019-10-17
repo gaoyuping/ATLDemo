@@ -15,7 +15,8 @@ ATLControl::ATLControl(ATLUISTYLE style, ICallback* icallback) :
     m_iBorderRight(DefaultBroder),
     m_iBorderBotton(DefaultBroder),
     m_iBorderLeft(DefaultBroder),
-    m_cName("ATLControl"),
+    m_cText("ATLControl"),
+    m_textColor(RGB(0,255,0)),
     m_borderColor(RGB(0,0, 0)),
     m_backgroundColor(RGB(255, 0, 255))
 {
@@ -46,6 +47,11 @@ void ATLControl::setBorderSize(int itop, int iright, int ibotton, int ileft)
     m_iBorderLeft = itop;
 }
 
+void ATLControl::setTextColor(COLORREF bordercolor)
+{
+    m_textColor = bordercolor;
+}
+
 void ATLControl::setBorderColor(COLORREF bordercolor)
 {
     m_borderColor = bordercolor;
@@ -53,6 +59,11 @@ void ATLControl::setBorderColor(COLORREF bordercolor)
 
 void ATLControl::setBackgroundColor(COLORREF bordercolor) {
     m_backgroundColor = bordercolor;
+}
+
+void ATLControl::seText(ATL::CString ctext)
+{
+    m_cText = ctext;
 }
 
 int ATLControl::getWidth()
@@ -115,14 +126,7 @@ LRESULT ATLControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 
     DrawBackgroundColor(dc);
     DrawBorder(dc);
-
-    CRect rect = m_rect;
-    rect.MoveToX(1);
-    rect.MoveToY(1);
-    rect.right = m_rect.right - 2;
-    rect.bottom = m_rect.bottom - 2;
-    int iret;
-    iret = dc.DrawText(m_cName, -1, rect, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+    DrawText(dc);
 
     bHandled = TRUE;
     return 0;
@@ -167,8 +171,8 @@ void ATLControl::DrawBorder(CPaintDC &dc)
 
     if (m_iBorderRight > 0)
     {
-        if (m_iBorderRight % 2 && m_iBorderRight > 1) {
-            irightHelf = m_iBorderRight / 2 - 1;
+        if (m_iBorderRight % 2) {
+            irightHelf = m_iBorderRight / 2 + 1;
         }
         else {
             irightHelf = m_iBorderRight / 2;
@@ -177,14 +181,14 @@ void ATLControl::DrawBorder(CPaintDC &dc)
         CPen penLt;
         penLt.CreatePen(PS_SOLID, m_iBorderRight, m_borderColor);
         CSelectPen selectLtPen(dc, penLt);
-        dc.MoveTo(m_rect.Width() - irightHelf - 1, 0);
-        dc.LineTo(m_rect.Width() - irightHelf - 1, m_rect.Height());
+        dc.MoveTo(m_rect.Width() - irightHelf, 0);
+        dc.LineTo(m_rect.Width() - irightHelf, m_rect.Height());
     }
 
     if (m_iBorderBotton > 0)
     {
-        if (m_iBorderBotton % 2 && m_iBorderBotton > 1) {
-            ibottonHelf = m_iBorderBotton / 2 - 1;
+        if (m_iBorderBotton % 2) {
+            ibottonHelf = m_iBorderBotton / 2 + 1;
         }
         else {
             ibottonHelf = m_iBorderBotton / 2;
@@ -217,3 +221,16 @@ void ATLControl::DrawBackgroundColor(CPaintDC &dc)
     rect.right = m_rect.right - m_iBorderRight;
     dc.FillRect(&rect, brush);
 }
+
+void ATLControl::DrawText(CPaintDC &dc) {
+    CRect rect;
+    rect.top = m_rect.top + m_iBorderTop;
+    rect.left = m_rect.left + m_iBorderLeft;
+    rect.bottom = m_rect.bottom - m_iBorderBotton;
+    rect.right = m_rect.right - m_iBorderRight;
+    int iret;
+    CSetBkMode setBkMode(dc, TRANSPARENT);
+    CSetTextColor setTextColor(dc, m_textColor);
+    iret = dc.DrawText(m_cText, -1, rect, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+}
+
