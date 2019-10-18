@@ -5,6 +5,8 @@
 #include <WinUser.h>
 #include <atlframe.h>
 #include <vector>
+#include <memory>
+#include "ATLMenu.h"
 
 
 #define WM_test WM_USER + 1000
@@ -12,7 +14,7 @@ enum menuStyle{
     menu_None = 0,
     menu_QT = 1,
     menu_ATL = 2,
-
+    
 };
 class ATLMain : public ATL::CWindowImpl<ATLMain>
     ,public ICallback
@@ -27,6 +29,7 @@ private:
     HMENU m_hMenu;
     CMenuHandle m_hmenuHandle;
     menuStyle m_style;
+    std::shared_ptr<ATLMenu> m_ptr;
 public:
     ATLMain();
     ~ATLMain();

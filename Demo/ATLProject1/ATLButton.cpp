@@ -2,6 +2,11 @@
 #include "ATLButton.h"
 #include "LogInfo.h"
 
+#include <winuser.h>
+#define RGB(r,g,b)          ((COLORREF)(((BYTE)(r)|((WORD)((BYTE)(g))<<8))|(((DWORD)(BYTE)(b))<<16)))
+
+static CPoint _mousepoint;
+
 ATLButton::ATLButton(ICallback* icallback):
     ATLLabel(UIButton, icallback)
 {
@@ -77,8 +82,7 @@ LRESULT ATLButton::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
     GetClientRect(&m_rect);
     return 0;
 }
-#include <winuser.h>
-#define RGB(r,g,b)          ((COLORREF)(((BYTE)(r)|((WORD)((BYTE)(g))<<8))|(((DWORD)(BYTE)(b))<<16)))
+
 LRESULT ATLButton::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     InOutlog(__FUNCTION__);
@@ -89,10 +93,13 @@ LRESULT ATLButton::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 LRESULT ATLButton::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     InOutlog(__FUNCTION__);
+    if (m_icallback) {
+        m_icallback->OnCtrlCallback(this);
+    }
     bHandled = false;
     return 0;
 }
-static CPoint _mousepoint;
+
 LRESULT ATLButton::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     if (_mousepoint.x == GET_X_LPARAM(lParam) && _mousepoint .y == GET_Y_LPARAM(lParam))
@@ -104,15 +111,13 @@ LRESULT ATLButton::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
     _mousepoint.y = GET_Y_LPARAM(lParam);
     if (!m_bMouseWithin)
     {
-        //OnMouseEnter(uMsg, wParam, lParam, bHandled);
+        //do nothing
     }
     if (!m_bMouseTracking)
     {
-        //StartTrack();
         m_bMouseTracking = true;
     }
 
-    //ATLTRACE(_T("  mouse point %d,%d\n"), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
     bHandled = TRUE;
     return 0;
 }

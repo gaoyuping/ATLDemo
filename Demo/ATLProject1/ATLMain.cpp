@@ -192,7 +192,7 @@ LRESULT ATLMain::OnRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
     }
     else if (menu_ATL == (m_style & menu_ATL))
     {
-    //ATL
+        //ATL
         ATLMenu *ptrmenu = new ATLMenu(this);
         CPoint point;
         GetCursorPos(&point);
@@ -210,11 +210,14 @@ LRESULT ATLMain::OnRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
         }
         ATLTRACE(_T(" %s in\n"), _T("hhhhhhhhhhhhhhhhhhhhhhhhh"));
         {
-            ATLButton *ptrctrl = new ATLButton(this);
-            ptrctrl->Create(ptrmenu->m_hWnd);
-            ptrctrl->setSize(100, 50);
-            ptrctrl->LoadImageW(IDB_BITMAP1);
-            ptrmenu->addItem(ptrctrl);
+            for (int i =0; i < 10; i++)
+            {
+                ATLButton *ptrctrl = new ATLButton(this);
+                ptrctrl->Create(ptrmenu->m_hWnd);
+                ptrctrl->setSize(100, 50);
+                ptrctrl->LoadImageW(IDB_BITMAP1);
+                ptrmenu->addItem(ptrctrl);
+            }
         }
         ATLTRACE(_T(" %s in\n"), _T("ssssssssss"));
         ptrmenu->ShowWindow(true);
@@ -229,9 +232,12 @@ LRESULT ATLMain::OnDeleteCtrl(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHa
 {
     InOutlog(__FUNCTION__);
     bHandled = false;
-    if (WM_deleteCtrl == uMsg)
-    {
-        //delete (ATLControl*)wParam;
+    switch (uMsg) {
+    case WM_deleteCtrl:
+        delete (ATLControl*)wParam;
+        break;
+    default:
+        break;
     }
     return FALSE;
 }
@@ -243,7 +249,8 @@ LRESULT ATLMain::OnTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     return FALSE;
 }
 
-LRESULT ATLMain::OnCmdNewNotebook(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)     {
+LRESULT ATLMain::OnCmdNewNotebook(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
     InOutlog(__FUNCTION__);
     bHandled = false;
 
@@ -255,7 +262,9 @@ LRESULT ATLMain::OnInitMenuPopup(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     InitTopMenuPopup((HMENU)wParam, LOWORD(lParam));
     return true;
 }
-LRESULT ATLMain::OnMenuClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+
+LRESULT ATLMain::OnMenuClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
     switch (wID) {
     case ID_STYLE_QT:
         m_style = menu_QT;
@@ -273,10 +282,15 @@ LRESULT ATLMain::OnMenuClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHa
 void ATLMain::OnCtrlCallback(ATLControl* pCtrl)
 {
     InOutlog(__FUNCTION__);
-    if (UIMenu == pCtrl->getStyle())
-    {
+    switch (pCtrl->getStyle()) {
+    case UIMenu:
         pCtrl->DestroyWindow();
-        ::PostMessage(m_hWnd, WM_deleteCtrl,(WPARAM)pCtrl,0 );
+        ::PostMessage(m_hWnd, WM_deleteCtrl, (WPARAM)pCtrl, 0);
+        break;
+    case UIButton:
+        break;
+    default:
+        break;
     }
 }
 

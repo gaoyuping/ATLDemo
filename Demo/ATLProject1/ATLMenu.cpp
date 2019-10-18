@@ -37,7 +37,6 @@ ATLMenu::~ATLMenu()
         iter = m_listCtrl.begin();
         ptrctrl = *iter;
         m_listCtrl.erase(iter);
-        ptrctrl->DestroyWindow();
         delete ptrctrl;
     }
 }
@@ -140,6 +139,15 @@ LRESULT ATLMenu::OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
         m_icallback->OnCtrlCallback(this);
     }
     return FALSE;
+}
+
+LRESULT ATLMenu::OnActivate(UINT msg, WPARAM wp, LPARAM lp, BOOL& bHandled)
+{
+    if (wp == WA_INACTIVE) {
+        PostMessage(WM_CLOSE, 0, 0);
+    }
+    bHandled = FALSE;
+    return bHandled;
 }
 
 bool ATLMenu::addItem(ATLControl* ptrItem, int ipos)
