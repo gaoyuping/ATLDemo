@@ -12,6 +12,8 @@ public:
     ATLMenu(ICallback* icallback = nullptr);
     virtual~ATLMenu();
     void setSpace(int ispace = 0);
+
+    void show(RECT point);
 protected:
     int m_iSpace;
 

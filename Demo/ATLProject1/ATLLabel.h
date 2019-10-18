@@ -21,6 +21,7 @@ protected:
     ATLLabel(ATLUISTYLE style, ICallback* icallback = nullptr);
 
     ATL::CImage* m_image;
+    CSize m_cTextSize;
 public:
     BEGIN_MSG_MAP(ATLLabel); // 利用宏实现ProcessWindowMessage函数，用以分发消息
     CHAIN_MSG_MAP(ATLControl)

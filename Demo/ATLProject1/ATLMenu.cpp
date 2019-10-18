@@ -13,6 +13,12 @@ ATLMenu::ATLMenu(ICallback* icallback) :
     m_iBorderTop = 1;
     m_iBorderRight = 1;
     m_iSpace = 0;
+    RECT rect;
+    rect.top = 0;
+    rect.left = 0;
+    rect.bottom = 1;
+    rect.right = 1;
+    Create(m_hWnd, rect, _T("ATLMenu"), WS_POPUP);
 }
 
 ATLMenu::ATLMenu(ATLUISTYLE style, ICallback* icallback) :
@@ -25,6 +31,12 @@ ATLMenu::ATLMenu(ATLUISTYLE style, ICallback* icallback) :
     m_iBorderTop = 1;
     m_iBorderRight = 1;
     m_iSpace = 0;
+    RECT rect;
+    rect.top = 0;
+    rect.left = 0;
+    rect.bottom = 1;
+    rect.right = 1;
+    Create(m_hWnd, rect, _T("ATLMenu"), WS_POPUP);
 }
 
 ATLMenu::~ATLMenu()
@@ -44,6 +56,12 @@ ATLMenu::~ATLMenu()
 void ATLMenu::setSpace(int ispace)
 {
     m_iSpace = ispace;
+}
+
+void ATLMenu::show(RECT point) {
+    MoveWindow(point.left, point.top, point.right, point.bottom);
+    ShowWindow(true);
+    UpdateWindow();
 }
 
 LRESULT ATLMenu::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

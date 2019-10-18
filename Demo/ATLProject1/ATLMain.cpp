@@ -201,7 +201,7 @@ LRESULT ATLMain::OnRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
         rect.left = point.x;
         rect.bottom = point.y + 50;
         rect.right = point.x + 100;
-        ptrmenu->Create(m_hWnd, rect, _T("ATLMenu"), WS_POPUP);
+        //ptrmenu->Create(m_hWnd, rect, _T("ATLMenu"), WS_POPUP);
         {
             ATLLabel *ptrctrl = new ATLLabel(this);
             ptrctrl->Create(ptrmenu->m_hWnd);
@@ -220,8 +220,7 @@ LRESULT ATLMain::OnRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
             }
         }
         ATLTRACE(_T(" %s in\n"), _T("ssssssssss"));
-        ptrmenu->ShowWindow(true);
-        ptrmenu->UpdateWindow();
+        ptrmenu->show(rect);
     }
 
     //
