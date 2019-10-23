@@ -18,7 +18,16 @@ ATLMain::ATLMain()
 
 ATLMain::~ATLMain()
 {
-
+    for (; m_btnlist.size() > 0;)
+    {
+        std::vector<ATLButton*>::iterator iter = m_btnlist.begin();
+        if (iter!= m_btnlist.end()) {
+            ATLButton* ptr = *iter;
+            m_btnlist.erase(iter);
+            delete ptr;
+        }
+        
+    }
 }
 
 LRESULT ATLMain::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -34,22 +43,24 @@ LRESULT ATLMain::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
     rect.bottom = 100;
 
     HWND hwnd = nullptr;
-    hwnd = m_label.Create(m_hWnd, rect, _T("ATLLabel"), WS_CHILD | WS_VISIBLE);
     m_label.setBorderSize(1, 1, 1, 1);
     m_label.seText(_T("ATLLabel"));
     m_label.LoadImageW(IDB_BITMAP1);
+    m_label.Create(m_hWnd, rect);
+    m_label.setPos(rect);
     rect.top += 60;
     rect.bottom += 60;
-    hwnd = m_btn.Create(m_hWnd, rect, _T("ATLButton"), WS_CHILD | WS_VISIBLE);
+    m_btn.Create(m_hWnd);
+    m_btn.setPos(rect);
     m_btn.setBorderSize(2, 2, 2, 2);
-
     for (int i = 3; i < 11; i++)
     {
         ATLButton* ptr = new ATLButton(this);
         m_btnlist.push_back(ptr);
         rect.top += 60;
         rect.bottom += 60;
-        hwnd = ptr->Create(m_hWnd, rect, _T("ATLButton"), WS_CHILD | WS_VISIBLE);
+        ptr->Create(m_hWnd);
+        ptr->setPos(rect);
         ptr->seText(_T("ATLButton"));
         ptr->setBorderSize(i, i, i, i);
     }
@@ -193,34 +204,42 @@ LRESULT ATLMain::OnRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
     else if (menu_ATL == (m_style & menu_ATL))
     {
         //ATL
-        ATLMenu *ptrmenu = new ATLMenu(this);
+        SetFocus();
+        if (m_ptr.get()) {
+            if (m_ptr->m_hWnd) {
+                m_ptr->DestroyWindow();
+            }
+        }
+        m_ptr.reset(new ATLMenu(this));
         CPoint point;
         GetCursorPos(&point);
+        //ScreenToClient(&point);
         RECT rect;
         rect.top = point.y;
         rect.left = point.x;
         rect.bottom = point.y + 50;
         rect.right = point.x + 100;
-        //ptrmenu->Create(m_hWnd, rect, _T("ATLMenu"), WS_POPUP);
+        m_ptr->setMaxSize(100, 300);
+        m_ptr->Create(m_hWnd, rect, _T("ATLMenu"), WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
         {
             ATLLabel *ptrctrl = new ATLLabel(this);
-            ptrctrl->Create(ptrmenu->m_hWnd);
+            ptrctrl->Create(m_ptr->m_hWnd);
             ptrctrl->setSize(100, 50);
-            ptrmenu->addItem(ptrctrl);
+            m_ptr->addItem(ptrctrl);
         }
         ATLTRACE(_T(" %s in\n"), _T("hhhhhhhhhhhhhhhhhhhhhhhhh"));
         {
             for (int i =0; i < 10; i++)
             {
                 ATLButton *ptrctrl = new ATLButton(this);
-                ptrctrl->Create(ptrmenu->m_hWnd);
+                ptrctrl->Create(m_ptr->m_hWnd);
                 ptrctrl->setSize(100, 50);
                 ptrctrl->LoadImageW(IDB_BITMAP1);
-                ptrmenu->addItem(ptrctrl);
+                m_ptr->addItem(ptrctrl);
             }
         }
         ATLTRACE(_T(" %s in\n"), _T("ssssssssss"));
-        ptrmenu->show(rect);
+        m_ptr->show(rect);
     }
 
     //
@@ -283,8 +302,8 @@ void ATLMain::OnCtrlCallback(ATLControl* pCtrl)
     InOutlog(__FUNCTION__);
     switch (pCtrl->getStyle()) {
     case UIMenu:
-        pCtrl->DestroyWindow();
-        ::PostMessage(m_hWnd, WM_deleteCtrl, (WPARAM)pCtrl, 0);
+        //pCtrl->DestroyWindow();
+        //::PostMessage(m_hWnd, WM_deleteCtrl, (WPARAM)pCtrl, 0);
         break;
     case UIButton:
         break;

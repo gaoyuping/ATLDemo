@@ -28,6 +28,7 @@ ATLLabel::~ATLLabel()
 {
     InOutlog(__FUNCTION__);
     m_cText = "ATLLabel";
+    FreeImage();
 }
 
 bool ATLLabel::LoadImage(int Resourceid, int index, int imageCount) {
@@ -53,6 +54,7 @@ LRESULT ATLLabel::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 {
     InOutlog(__FUNCTION__);
     bHandled = false;
+    m_hWnd;
     return 0;
 }
 
@@ -85,6 +87,7 @@ LRESULT ATLLabel::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled
 LRESULT ATLLabel::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     InOutlog(__FUNCTION__);
+    return __super::OnPaint(uMsg, wParam, lParam, bHandled);
     CPaintDC dc(m_hWnd);
 
     DrawBackgroundColor(dc);

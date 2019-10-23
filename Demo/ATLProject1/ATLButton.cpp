@@ -86,8 +86,15 @@ LRESULT ATLButton::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
 LRESULT ATLButton::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     InOutlog(__FUNCTION__);
+    CPaintDC dc(m_hWnd);
+    dc.m_ps.rcPaint;
+    CMemoryDC dcMem(dc.m_hDC, dc.m_ps.rcPaint);
+    DrawBackgroundColorMerory(dcMem);
+    DrawBorderMerory(dcMem);
+    DrawTextMerory(dcMem);
 
-    return __super::OnPaint(uMsg, wParam, lParam, bHandled);
+    bHandled = TRUE;
+    return bHandled;
 }
 
 LRESULT ATLButton::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

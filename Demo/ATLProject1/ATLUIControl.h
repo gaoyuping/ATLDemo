@@ -1,5 +1,8 @@
 #pragma once
 #include "stdafx.h"
+enum {
+    iUnDefine = -1,
+};
 
 #define  WM_deleteCtrl WM_USER+1000
 
@@ -22,6 +25,7 @@ enum ATLUISTYLE
 
     UIMenu,
     UILayout,
+    UIScrollBar,
 };
 
 class ATLControl : public ATL::CWindowImpl<ATLControl>
@@ -33,11 +37,19 @@ protected:
     ICallback* m_icallback;
     CString m_cText;
     CRect m_rect;
+    RECT m_recttmp;
+    bool m_bshow;
 protected:
     ATLUISTYLE m_style;
 
-    int m_iwidth;
-    int m_iheight;
+    int m_iWidth;
+    int m_iHeight;
+    int m_iMinWidth;
+    int m_iMinHeight;
+    int m_iMaxWidth;
+    int m_iMaxHeight;
+    int m_iFixWidth;
+    int m_iFixHeight;
 
     int m_iBorderTop;
     int m_iBorderRight;
@@ -48,8 +60,18 @@ protected:
     COLORREF m_backgroundColor;
 public:
     ATLUISTYLE getStyle();
-    
+
+    void setParent(HWND hwnd);
+
+    void setPos(CRect rect);
+
     void setSize(int iw, int ih);
+
+    void setMinSize(int iw, int ih);
+
+    void setMaxSize(int iw, int ih);
+
+    void setFixSize(int iw, int ih);
 
     void setBorderSize(int itop, int iright, int ibotton, int ileft);
     
@@ -60,6 +82,10 @@ public:
     void setBackgroundColor(COLORREF bordercolor);
 
     void seText(CString ctext);
+
+    void SetWidth(int iw);
+
+    void SetHeight(int ih);
 
     int getWidth();
     
@@ -96,5 +122,11 @@ protected:
     virtual void DrawBorder(CPaintDC &dc);
     virtual void DrawBackgroundColor(CPaintDC &dc);
     virtual void DrawText(CPaintDC &dc);
+
+    virtual void DrawBorderMerory(CMemoryDC &dc);
+    virtual void DrawBackgroundColorMerory(CMemoryDC &dc);
+    virtual void DrawTextMerory(CMemoryDC &dc);
+
+    
 };
 

@@ -3,8 +3,10 @@
 #include "LogInfo.h"
 #include <atlwin.h>
 
+int iScrollBarWidth = 20;
 ATLMenu::ATLMenu(ICallback* icallback) :
     ATLControl(UIMenu, icallback)
+    ,m_sBar(this)
 {
     InOutlog(__FUNCTION__);
     m_cText = "ATLMenu";
@@ -13,16 +15,13 @@ ATLMenu::ATLMenu(ICallback* icallback) :
     m_iBorderTop = 1;
     m_iBorderRight = 1;
     m_iSpace = 0;
-    RECT rect;
-    rect.top = 0;
-    rect.left = 0;
-    rect.bottom = 1;
-    rect.right = 1;
-    Create(m_hWnd, rect, _T("ATLMenu"), WS_POPUP);
+    m_iBeginTop = 0;
+    m_sizechange = false;
 }
 
 ATLMenu::ATLMenu(ATLUISTYLE style, ICallback* icallback) :
     ATLControl(style, icallback)
+    ,m_sBar(this)
 {
     InOutlog(__FUNCTION__);
     m_cText = "ATLMenu";
@@ -31,12 +30,8 @@ ATLMenu::ATLMenu(ATLUISTYLE style, ICallback* icallback) :
     m_iBorderTop = 1;
     m_iBorderRight = 1;
     m_iSpace = 0;
-    RECT rect;
-    rect.top = 0;
-    rect.left = 0;
-    rect.bottom = 1;
-    rect.right = 1;
-    Create(m_hWnd, rect, _T("ATLMenu"), WS_POPUP);
+    m_iBeginTop = 0;
+    m_sizechange = false;
 }
 
 ATLMenu::~ATLMenu()
@@ -68,7 +63,10 @@ LRESULT ATLMenu::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
 {
     InOutlog(__FUNCTION__);
     bHandled = false;
+    m_sBar.Create(m_hWnd);
     DWORD wStyle = GetWndStyle(0);
+    wStyle = wStyle | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+    //::SetWindowLong(m_hWnd, GWL_STYLE, wStyle);
     return 0;
 }
 
@@ -95,6 +93,7 @@ LRESULT ATLMenu::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     InOutlog(__FUNCTION__);
     bHandled = false;
+    m_sizechange = true;
     int iw = 0;
     int ih = 0;
     for (std::vector<ATLControl*>::iterator iter = m_listCtrl.begin(); iter != m_listCtrl.end(); iter++)
@@ -103,8 +102,8 @@ LRESULT ATLMenu::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
         {
             ih += m_iSpace;
         }
-        ATLTRACE(_T("%d  x=%d y=%d  out\n"), 0,0, ih);
-        (*iter)->MoveWindow(m_iBorderLeft, m_iBorderTop +  ih, (*iter)->getWidth(), (*iter)->getHeight());
+        ATLTRACE(_T("%d  x=%d y=%d  out\n"), 0,0, m_iBorderTop + ih - m_iBeginTop);
+        (*iter)->MoveWindow(m_iBorderLeft, m_iBorderTop +  ih - m_iBeginTop, (*iter)->getWidth(), (*iter)->getHeight());
         iw = iw > (*iter)->getWidth()? iw : (*iter)->getWidth();
         ih += (*iter)->getHeight();
     }
@@ -113,22 +112,52 @@ LRESULT ATLMenu::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     if (iw == 0 || ih == 0)
     {
         GetClientRect(&m_rect);
-        m_iheight = m_rect.Height();
-        m_iwidth = m_rect.Width();
+        m_iHeight = m_rect.Height();
+        m_iWidth = m_rect.Width();
     }
     else
     {
-        if (m_iheight == ih && m_iwidth == iw)
+        if (iUnDefine != m_iMaxHeight && ih > m_iMaxHeight) {
+            m_sBar.SetRange(0, ih - m_iMaxHeight);
+            ih = m_iMaxHeight;
+            RECT rect;
+            rect.top = m_iBorderTop;
+            rect.left = m_iWidth - m_iBorderLeft - iScrollBarWidth;
+            rect.right = m_iWidth - m_iBorderRight;
+            rect.bottom = m_iHeight - m_iBorderBotton;
+            m_sBar.Show(rect);
+            for (std::vector<ATLControl*>::iterator iter = m_listCtrl.begin(); iter != m_listCtrl.end(); iter++) {
+                (*iter)->SetWidth(m_iWidth - iScrollBarWidth - 2);
+                (*iter)->Invalidate();
+            }
+        }
+        else if (iUnDefine != m_iMinHeight && ih < m_iMinHeight) {
+            ih = m_iMinHeight;
+            m_sBar.Hide();
+        }
+        else {
+            m_sBar.Hide();
+        }
+
+        if (iUnDefine != m_iMaxWidth && ih > m_iMaxWidth) {
+            iw = m_iMaxWidth;
+        }
+        else if (iUnDefine != m_iMinWidth && ih < m_iMinWidth) {
+            iw = m_iMinWidth;
+        }
+
+        if (m_iHeight == ih && m_iWidth == iw)
         {
-            ::PostMessage(m_hWnd, WM_PAINT, 0, 0);
+            Invalidate();
+            m_sizechange = false;
             return 0;
         }
-        m_iheight = ih;
-        m_iwidth = iw;
-        m_rect.right = m_rect.left + m_iwidth;
-        m_rect.bottom = m_rect.top + m_iheight;
+        m_iHeight = ih;
+        m_iWidth = iw;
+        m_rect.right = m_rect.left + m_iWidth;
+        m_rect.bottom = m_rect.top + m_iHeight;
     }
-    ResizeClient(m_iwidth, m_iheight);
+    ResizeClient(m_iWidth, m_iHeight);
  
     return 0;
 }
@@ -162,7 +191,7 @@ LRESULT ATLMenu::OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 LRESULT ATLMenu::OnActivate(UINT msg, WPARAM wp, LPARAM lp, BOOL& bHandled)
 {
     if (wp == WA_INACTIVE) {
-        PostMessage(WM_CLOSE, 0, 0);
+        //PostMessage(WM_CLOSE, 0, 0);
     }
     bHandled = FALSE;
     return bHandled;
@@ -201,4 +230,14 @@ bool ATLMenu::removeItem(const ATLControl* ptrItem)
         }
     }
     return false;
+}
+
+void ATLMenu::OnCtrlCallback(ATLControl* pCtrl)     {
+    if (ATLScrollBar *ptr = dynamic_cast<ATLScrollBar*>(pCtrl)) {
+        if (!m_sizechange) {
+            m_iBeginTop = ptr->GetValue();
+
+            ::PostMessage(m_hWnd, WM_SIZE, 0, 0);
+        }
+    }
 }

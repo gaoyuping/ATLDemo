@@ -4,8 +4,9 @@
 #include <atlctl.h>
 #include "ATLUIControl.h"
 #include <vector>
+#include "ATLScrollBar.h"
 
-class ATLMenu : public ATLControl
+class ATLMenu : public ATLControl, public ICallback
 {
 public:
 
@@ -14,11 +15,14 @@ public:
     void setSpace(int ispace = 0);
 
     void show(RECT point);
+
 protected:
     int m_iSpace;
-
+    int m_iBeginTop;
+    bool m_sizechange;
+    ATLScrollBar m_sBar;
 private:
-    ATLMenu(ATLUISTYLE style, ICallback* icallback = nullptr);
+    ATLMenu(ATLUISTYLE style = UIMenu, ICallback* icallback = nullptr);
 
 private:
     std::vector<ATLControl*> m_listCtrl;
@@ -43,5 +47,7 @@ public:
 public:
     bool addItem(ATLControl* ptrItem, int ipos = -1);
     bool removeItem(const ATLControl* ptrItem);
+
+    void OnCtrlCallback(ATLControl* pCtrl) override;
 };
 

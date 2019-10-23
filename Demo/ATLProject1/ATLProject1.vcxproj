@@ -233,6 +233,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="ATLScrollBar.cpp" />
     <ClCompile Include="ATLUIControl.cpp" />
     <ClCompile Include="LogInfo.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -254,6 +255,7 @@
     <ClInclude Include="ATLMain.h" />
     <ClInclude Include="ATLMenu.h" />
     <ClInclude Include="ATLProject1_i.h" />
+    <ClInclude Include="ATLScrollBar.h" />
     <ClInclude Include="ATLUIControl.h" />
     <ClInclude Include="LogInfo.h" />
     <ClInclude Include="Resource.h" />

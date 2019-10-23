@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
+#include <chrono>
 
+using tmieclock = std::chrono::time_point<std::chrono::system_clock>;
 class funlog
 {
 public:
@@ -9,5 +11,6 @@ public:
     ~funlog();
 private:
     std::wstring m_datamsg;
+    tmieclock m_start;
 };
 #define InOutlog(str) funlog logfun(str);
