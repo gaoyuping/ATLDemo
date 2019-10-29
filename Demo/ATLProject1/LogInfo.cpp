@@ -21,5 +21,5 @@ funlog::funlog(std::string datamsg)
 funlog::~funlog()
 {
     tmieclock entime = std::chrono::system_clock::now();
-    ATLTRACE(_T("  %s out use time %f us\n"), m_datamsg.c_str(),double(std::chrono::duration_cast<std::chrono::microseconds>(entime - m_start).count())*std::chrono::microseconds::period::num / std::chrono::microseconds::period::den);
+    ATLTRACE(_T("  %s out use time %f s\n"), m_datamsg.c_str(),double(std::chrono::duration_cast<std::chrono::microseconds>(entime - m_start).count())*std::chrono::microseconds::period::num / std::chrono::microseconds::period::den);
 };

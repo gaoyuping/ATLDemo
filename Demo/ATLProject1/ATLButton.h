@@ -20,7 +20,6 @@ public:
     MESSAGE_HANDLER(WM_KILLFOCUS, OnKillFocus);
     END_MSG_MAP()
 
-    static bool IsWantedMessage(UINT uMsg);
 private:
     bool m_bMouseWithin;
     bool m_bMouseTracking; //m_bMouseTracking = false && m_bMouseWithin = true ÊÇhover×´Ì¬

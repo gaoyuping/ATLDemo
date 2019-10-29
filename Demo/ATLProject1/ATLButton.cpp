@@ -30,17 +30,6 @@ ATLButton::~ATLButton()
 {
 }
 
-bool ATLButton::IsWantedMessage(UINT uMsg)
-{
-    switch (uMsg) {
-    case WM_SETFOCUS:
-    case WM_KILLFOCUS:
-        return true;
-    }
-
-    return false;
-}
-
 void ATLButton::StartTrack()
 {
     InOutlog(__FUNCTION__);
@@ -56,6 +45,7 @@ LRESULT ATLButton::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 {
     InOutlog(__FUNCTION__);
     bHandled = false;
+    m_bcreate = true;
     return 0;
 }
 
@@ -85,14 +75,30 @@ LRESULT ATLButton::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
 
 LRESULT ATLButton::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    InOutlog(__FUNCTION__);
-    CPaintDC dc(m_hWnd);
-    dc.m_ps.rcPaint;
-    CMemoryDC dcMem(dc.m_hDC, dc.m_ps.rcPaint);
-    DrawBackgroundColorMerory(dcMem);
-    DrawBorderMerory(dcMem);
-    DrawTextMerory(dcMem);
+    //InOutlog(__FUNCTION__);
+//     CPaintDC pdc(m_hWnd);
+//     CRect rc = pdc.m_ps.rcPaint;
+// 
+//     CMemoryDC mdc(pdc.m_hDC, rc);
+//     DrawBackgroundColor(mdc);
+//     DrawBorder(mdc);
+//     DrawText(mdc);
+// 
+//     bHandled = TRUE;
+//     return bHandled;
+    CPaintDC pdc(m_hWnd);
 
+    if (m_bNeedRePaint) {
+        m_bNeedRePaint = false;
+        hDCMem = CreateCompatibleDC(pdc.m_hDC);
+        hBmpMem = CreateCompatibleBitmap(pdc.m_hDC, pdc.m_ps.rcPaint.right, pdc.m_ps.rcPaint.bottom);
+        hPreBmp = (HBITMAP)SelectObject(hDCMem, hBmpMem);
+        CMemoryDC mdc(hDCMem, pdc.m_ps.rcPaint);
+        DrawBackgroundColor(mdc);
+        DrawBorder(mdc);
+        DrawText(mdc);
+    }
+    BitBlt(pdc.m_hDC, 0, 0, pdc.m_ps.rcPaint.right, pdc.m_ps.rcPaint.bottom, hDCMem, 0, 0, SRCCOPY);
     bHandled = TRUE;
     return bHandled;
 }

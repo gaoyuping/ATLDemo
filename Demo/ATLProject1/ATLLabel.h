@@ -41,9 +41,11 @@ public:
 
     virtual LRESULT OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     virtual LRESULT OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-public:
-    void DrawText(CPaintDC &dc) override;
 
-    virtual void DrawPic(CPaintDC &dc);
+    virtual void Draw(CMemoryDC &mdc) override;
+public:
+    void DrawText(CMemoryDC &dc) override;
+
+    virtual void DrawPic(CMemoryDC &dc);
 };
 

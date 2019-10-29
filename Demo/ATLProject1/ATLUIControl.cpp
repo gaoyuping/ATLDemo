@@ -23,8 +23,10 @@ ATLControl::ATLControl(ATLUISTYLE style, ICallback* icallback) :
     m_iBorderLeft(DefaultBroder),
     m_cText("ATLControl"),
     m_textColor(RGB(0,255,0)),
-    m_borderColor(RGB(0,0, 0)),
+    m_borderColor(RGB(0,0, 255)),
     m_backgroundColor(RGB(255, 0, 255))
+    , m_bNeedRePaint(true)
+    , m_bcreate(false)
 {
     InOutlog(__FUNCTION__);
     m_bshow = false;
@@ -35,38 +37,63 @@ ATLControl::~ATLControl()
     InOutlog(__FUNCTION__);
 }
 
+bool ATLControl::IsWantedMessage(UINT uMsg) {
+    switch (uMsg) {
+    case WM_SETFOCUS:
+    case WM_KILLFOCUS:
+    //case WM_SIZE:
+    case WM_MOUSEWHEEL:
+    case WM_LBUTTONUP:
+    case WM_LBUTTONDOWN:
+    //case WM_PAINT:
+        return true;
+    }
+
+    return false;
+}
+
 ATLUISTYLE ATLControl::getStyle()
 {
     return m_style;
 }
 
-void ATLControl::setParent(HWND hwnd) {
+void ATLControl::setHwnd(HWND hwnd) {
     m_hWnd = hwnd;
 }
 
 void ATLControl::setPos(CRect rect) {
-    MoveWindow(rect.left, rect.top, rect.Width(), rect.Height());
+    m_bNeedRePaint = true;
+    if (m_bcreate) {
+        MoveWindow(rect.left, rect.top, rect.Width(), rect.Height());
+    }
+    else {
+        m_rect = rect;
+    }
 }
 
 void ATLControl::setSize(int iw, int ih)
 {
     m_iWidth = iw;
     m_iHeight = ih;
+    m_bNeedRePaint = true;
 }
 
 void ATLControl::setMinSize(int iw, int ih) {
     m_iMinWidth = iw;
     m_iMinHeight = ih;
+    m_bNeedRePaint = true;
 }
 
 void ATLControl::setMaxSize(int iw, int ih) {
     m_iMaxWidth = iw;
     m_iMaxHeight = ih;
+    m_bNeedRePaint = true;
 }
 
 void ATLControl::setFixSize(int iw, int ih) {
     m_iFixWidth = iw;
     m_iFixHeight = ih;
+    m_bNeedRePaint = true;
 }
 
 void ATLControl::setBorderSize(int itop, int iright, int ibotton, int ileft)
@@ -75,38 +102,49 @@ void ATLControl::setBorderSize(int itop, int iright, int ibotton, int ileft)
     m_iBorderRight = itop;
     m_iBorderBotton = itop;
     m_iBorderLeft = itop;
+    m_bNeedRePaint = true;
 }
 
 void ATLControl::setTextColor(COLORREF bordercolor)
 {
     m_textColor = bordercolor;
+    m_bNeedRePaint = true;
 }
 
 void ATLControl::setBorderColor(COLORREF bordercolor)
 {
     m_borderColor = bordercolor;
+    m_bNeedRePaint = true;
 }
 
 void ATLControl::setBackgroundColor(COLORREF bordercolor) {
     m_backgroundColor = bordercolor;
+    m_bNeedRePaint = true;
 }
 
 void ATLControl::seText(CString ctext)
 {
     m_cText = ctext;
+    m_bNeedRePaint = true;
 }
 
 void ATLControl::SetWidth(int iw) {
     m_iWidth = iw;
-    GetClientRect(&m_rect);
+    if (m_bcreate) {
+        GetClientRect(&m_rect);
+    }
     m_rect.right = m_rect.left + m_iWidth;
+    m_bNeedRePaint = true;
     //MoveWindow(m_rect, true);
 }
 
 void ATLControl::SetHeight(int ih) {
     m_iHeight = ih;
-    GetClientRect(&m_rect);
+    if (m_bcreate) {
+        GetClientRect(&m_rect);
+    }
     m_rect.bottom = m_rect.top + m_iHeight;
+    m_bNeedRePaint = true;
     //MoveWindow(m_rect, true);
 }
 
@@ -123,6 +161,7 @@ LRESULT ATLControl::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 {
     InOutlog(__FUNCTION__);
     bHandled = false;
+    m_bcreate = true;
     return 0;
 }
 
@@ -155,9 +194,12 @@ LRESULT ATLControl::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
     bHandled = false;
     if (m_iHeight == -1 && m_iWidth == -1)
     {
-        GetClientRect(&m_rect);
+        if (m_bcreate) {
+            GetClientRect(&m_rect);
+        }
         m_iWidth = m_rect.Width();
         m_iHeight = m_rect.Height();
+        m_bNeedRePaint = true;
     }
     return 0;
 }
@@ -168,13 +210,26 @@ using namespace Gdiplus;
 LRESULT ATLControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     InOutlog(__FUNCTION__);
+    CPaintDC pdc(m_hWnd);
 
-    CPaintDC dc(m_hWnd);
-    dc.m_ps.rcPaint;
-    CMemoryDC dcMem(dc.m_hDC, dc.m_ps.rcPaint);
-    DrawBackgroundColorMerory(dcMem);
-    DrawBorderMerory(dcMem);
-    DrawTextMerory(dcMem);
+    if (m_bNeedRePaint) {
+        m_bNeedRePaint = false;
+        hDCMem = CreateCompatibleDC(pdc.m_hDC);
+        hBmpMem = CreateCompatibleBitmap(pdc.m_hDC, pdc.m_ps.rcPaint.right, pdc.m_ps.rcPaint.bottom);
+        hPreBmp = (HBITMAP)SelectObject(hDCMem, hBmpMem);
+        CMemoryDC mdc(hDCMem, pdc.m_ps.rcPaint);
+        DrawBackgroundColor(mdc);
+        DrawBorder(mdc);
+        DrawText(mdc);
+    }
+    BitBlt(pdc.m_hDC, 0, 0, pdc.m_ps.rcPaint.right, pdc.m_ps.rcPaint.bottom, hDCMem, 0, 0, SRCCOPY);
+//     CPaintDC pdc(m_hWnd);
+//     CRect rc = pdc.m_ps.rcPaint;
+// 
+//     CMemoryDC mdc(pdc.m_hDC, rc);
+//     DrawBackgroundColor(mdc);
+//     DrawBorder(mdc);
+//     DrawText(mdc);
 
     bHandled = TRUE;
 
@@ -205,7 +260,13 @@ LRESULT ATLControl::OnDeleteCtrl(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     return FALSE;
 }
 
-void ATLControl::DrawBorder(CPaintDC &dc)
+void ATLControl::Draw(CMemoryDC &mdc) {
+    DrawBackgroundColor(mdc);
+    DrawBorder(mdc);
+    DrawText(mdc);
+}
+
+void ATLControl::DrawBorder(CMemoryDC &dc)
 {
     int irightHelf = 0;
     int ibottonHelf = 0;
@@ -214,8 +275,8 @@ void ATLControl::DrawBorder(CPaintDC &dc)
         CPen penLt;
         penLt.CreatePen(PS_SOLID, m_iBorderTop, m_borderColor);
         CSelectPen selectLtPen(dc, penLt);
-        dc.MoveTo(0 , m_iBorderTop / 2);
-        dc.LineTo(m_rect.Width(), m_iBorderTop / 2);
+        dc.MoveTo(m_rect.left, m_rect.top + m_iBorderTop / 2);
+        dc.LineTo(m_rect.right, m_rect.top + m_iBorderTop / 2);
     }
 
     if (m_iBorderRight > 0)
@@ -230,8 +291,9 @@ void ATLControl::DrawBorder(CPaintDC &dc)
         CPen penLt;
         penLt.CreatePen(PS_SOLID, m_iBorderRight, m_borderColor);
         CSelectPen selectLtPen(dc, penLt);
-        dc.MoveTo(m_rect.Width() - irightHelf, 0);
-        dc.LineTo(m_rect.Width() - irightHelf, m_rect.Height());
+        int ii = m_rect.right;
+        dc.MoveTo(m_rect.right - irightHelf, m_rect.top);
+        dc.LineTo(m_rect.right - irightHelf, m_rect.bottom);
     }
 
     if (m_iBorderBotton > 0)
@@ -245,8 +307,8 @@ void ATLControl::DrawBorder(CPaintDC &dc)
         CPen penLt;
         penLt.CreatePen(PS_SOLID, m_iBorderBotton, m_borderColor);
         CSelectPen selectLtPen(dc, penLt);
-        dc.MoveTo(0, m_rect.Height() - ibottonHelf);
-        dc.LineTo(m_rect.Width(), m_rect.Height() - ibottonHelf);
+        dc.MoveTo(m_rect.left, m_rect.bottom - ibottonHelf);
+        dc.LineTo(m_rect.right, m_rect.bottom - ibottonHelf);
     }
 
     if (m_iBorderLeft > 0)
@@ -254,12 +316,12 @@ void ATLControl::DrawBorder(CPaintDC &dc)
         CPen penLt;
         penLt.CreatePen(PS_SOLID, m_iBorderLeft, m_borderColor);
         CSelectPen selectLtPen(dc, penLt);
-        dc.MoveTo(m_iBorderLeft / 2, 0);
-        dc.LineTo(m_iBorderLeft / 2, m_rect.Height());
+        dc.MoveTo(m_rect.left + m_iBorderLeft / 2, m_rect.top);
+        dc.LineTo(m_rect.left + m_iBorderLeft / 2, m_rect.bottom);
     }
 }
 
-void ATLControl::DrawBackgroundColor(CPaintDC &dc)
+void ATLControl::DrawBackgroundColor(CMemoryDC &dc)
 {
     CBrush brush;
     brush.CreateSolidBrush(m_backgroundColor);
@@ -271,81 +333,7 @@ void ATLControl::DrawBackgroundColor(CPaintDC &dc)
     dc.FillRect(&rect, brush);
 }
 
-void ATLControl::DrawText(CPaintDC &dc) {
-    CRect rect;
-    rect.top = m_rect.top + m_iBorderTop;
-    rect.left = m_rect.left + m_iBorderLeft;
-    rect.bottom = m_rect.bottom - m_iBorderBotton;
-    rect.right = m_rect.right - m_iBorderRight;
-    int iret;
-    CSetBkMode setBkMode(dc, TRANSPARENT);
-    CSetTextColor setTextColor(dc, m_textColor);
-    iret = dc.DrawText(m_cText, -1, rect, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
-}
-
-
-
-void ATLControl::DrawBorderMerory(CMemoryDC &dc) {
-    int irightHelf = 0;
-    int ibottonHelf = 0;
-    if (m_iBorderTop > 0) {
-        CPen penLt;
-        penLt.CreatePen(PS_SOLID, m_iBorderTop, m_borderColor);
-        CSelectPen selectLtPen(dc, penLt);
-        dc.MoveTo(0, m_iBorderTop / 2);
-        dc.LineTo(m_rect.Width(), m_iBorderTop / 2);
-    }
-
-    if (m_iBorderRight > 0) {
-        if (m_iBorderRight % 2) {
-            irightHelf = m_iBorderRight / 2 + 1;
-        }
-        else {
-            irightHelf = m_iBorderRight / 2;
-        }
-
-        CPen penLt;
-        penLt.CreatePen(PS_SOLID, m_iBorderRight, m_borderColor);
-        CSelectPen selectLtPen(dc, penLt);
-        dc.MoveTo(m_rect.Width() - irightHelf, 0);
-        dc.LineTo(m_rect.Width() - irightHelf, m_rect.Height());
-    }
-
-    if (m_iBorderBotton > 0) {
-        if (m_iBorderBotton % 2) {
-            ibottonHelf = m_iBorderBotton / 2 + 1;
-        }
-        else {
-            ibottonHelf = m_iBorderBotton / 2;
-        }
-        CPen penLt;
-        penLt.CreatePen(PS_SOLID, m_iBorderBotton, m_borderColor);
-        CSelectPen selectLtPen(dc, penLt);
-        dc.MoveTo(0, m_rect.Height() - ibottonHelf);
-        dc.LineTo(m_rect.Width(), m_rect.Height() - ibottonHelf);
-    }
-
-    if (m_iBorderLeft > 0) {
-        CPen penLt;
-        penLt.CreatePen(PS_SOLID, m_iBorderLeft, m_borderColor);
-        CSelectPen selectLtPen(dc, penLt);
-        dc.MoveTo(m_iBorderLeft / 2, 0);
-        dc.LineTo(m_iBorderLeft / 2, m_rect.Height());
-    }
-}
-
-void ATLControl::DrawBackgroundColorMerory(CMemoryDC &dc) {
-    CBrush brush;
-    brush.CreateSolidBrush(m_backgroundColor);
-    CRect rect;
-    rect.top = m_rect.top + m_iBorderTop;
-    rect.left = m_rect.left + m_iBorderLeft;
-    rect.bottom = m_rect.bottom - m_iBorderBotton;
-    rect.right = m_rect.right - m_iBorderRight;
-    dc.FillRect(&rect, brush);
-}
-
-void ATLControl::DrawTextMerory(CMemoryDC &dc) {
+void ATLControl::DrawText(CMemoryDC &dc) {
     CRect rect;
     rect.top = m_rect.top + m_iBorderTop;
     rect.left = m_rect.left + m_iBorderLeft;

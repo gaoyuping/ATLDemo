@@ -58,10 +58,21 @@ protected:
     COLORREF m_textColor;
     COLORREF m_borderColor;
     COLORREF m_backgroundColor;
+    bool m_bNeedRePaint;
+    bool m_bcreate;
+
+    HDC m_hDCOriginal;
+    CBitmap m_bmp;
+    HBITMAP m_hBmpOld;
+    HBITMAP hBmpMem, hPreBmp;
+    HDC hDCMem;
 public:
+
+    static bool IsWantedMessage(UINT uMsg);
+
     ATLUISTYLE getStyle();
 
-    void setParent(HWND hwnd);
+    void setHwnd(HWND hwnd);
 
     void setPos(CRect rect);
 
@@ -117,16 +128,12 @@ public:
     virtual LRESULT OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     virtual LRESULT OnDeleteCtrl(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     
+    virtual void Draw(CMemoryDC &mdc);
 
 protected:
-    virtual void DrawBorder(CPaintDC &dc);
-    virtual void DrawBackgroundColor(CPaintDC &dc);
-    virtual void DrawText(CPaintDC &dc);
+    virtual void DrawBorder(CMemoryDC &dc);
+    virtual void DrawBackgroundColor(CMemoryDC &dc);
+    virtual void DrawText(CMemoryDC &dc);
 
-    virtual void DrawBorderMerory(CMemoryDC &dc);
-    virtual void DrawBackgroundColorMerory(CMemoryDC &dc);
-    virtual void DrawTextMerory(CMemoryDC &dc);
-
-    
 };
 

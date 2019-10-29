@@ -54,7 +54,7 @@ LRESULT ATLLabel::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 {
     InOutlog(__FUNCTION__);
     bHandled = false;
-    m_hWnd;
+    m_bcreate = true;
     return 0;
 }
 
@@ -87,14 +87,16 @@ LRESULT ATLLabel::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled
 LRESULT ATLLabel::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     InOutlog(__FUNCTION__);
-    return __super::OnPaint(uMsg, wParam, lParam, bHandled);
-    CPaintDC dc(m_hWnd);
+    //return __super::OnPaint(uMsg, wParam, lParam, bHandled);
+    CPaintDC pdc(m_hWnd);
+    CRect rc = pdc.m_ps.rcPaint;
 
-    DrawBackgroundColor(dc);
-    DrawBorder(dc);
+    CMemoryDC mdc(pdc.m_hDC, rc);
+    DrawBackgroundColor(mdc);
+    DrawBorder(mdc);
     if (m_image) 
-        DrawPic(dc);
-    DrawText(dc);
+        DrawPic(mdc);
+    DrawText(mdc);
     bHandled = True;
     return bHandled;
 }
@@ -115,7 +117,15 @@ LRESULT ATLLabel::OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHa
     return FALSE;
 }
 
-void ATLLabel::DrawText(CPaintDC &dc)
+void ATLLabel::Draw(CMemoryDC &mdc) {
+    DrawBackgroundColor(mdc);
+    DrawBorder(mdc);
+    if (m_image)
+        DrawPic(mdc);
+    DrawText(mdc);
+}
+
+void ATLLabel::DrawText(CMemoryDC &dc)
 {
     int iimageWidth = 0;
 
@@ -140,7 +150,7 @@ void ATLLabel::DrawText(CPaintDC &dc)
     m_cTextSize = size;
 }
 
-void ATLLabel::DrawPic(CPaintDC &dc)
+void ATLLabel::DrawPic(CMemoryDC &dc)
 {
     if (m_image)
     {
@@ -149,13 +159,13 @@ void ATLLabel::DrawPic(CPaintDC &dc)
         rect.left = m_rect.left + m_iBorderLeft;
         rect.bottom = m_rect.top + m_image->GetWidth() + 1;
         rect.right = m_rect.left + m_image->GetWidth() + 1;
-        if (rect.bottom >= m_rect.Height() - m_iBorderBotton)
+        if (rect.bottom >= m_rect.bottom - m_iBorderBotton)
         {
-            rect.bottom = m_rect.Height() - m_iBorderBotton - 1;
+            rect.bottom = m_rect.bottom - m_iBorderBotton - 1;
         }
-        if (rect.Width() > m_rect.Width() - m_iBorderRight) {
-            rect.right = m_rect.Width() - m_iBorderRight - 1;
+        if (rect.right > m_rect.right - m_iBorderRight) {
+            rect.right = m_rect.right - m_iBorderRight - 1;
         }
-        CRender::Image(dc.m_hDC, rect.top, rect.left, rect.right, rect.bottom, *m_image, 0, 0, m_image->GetWidth(), m_image->GetHeight());
+        CRender::Image(dc.m_hDC, rect.left, rect.top, rect.Width(), rect.Height(), *m_image, 0, 0, m_image->GetWidth(), m_image->GetHeight());
     }
 }

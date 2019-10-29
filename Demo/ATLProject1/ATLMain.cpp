@@ -223,7 +223,8 @@ LRESULT ATLMain::OnRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
         m_ptr->Create(m_hWnd, rect, _T("ATLMenu"), WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
         {
             ATLLabel *ptrctrl = new ATLLabel(this);
-            ptrctrl->Create(m_ptr->m_hWnd);
+            ptrctrl->setHwnd(m_ptr->m_hWnd);
+            //ptrctrl->Create(m_ptr->m_hWnd);
             ptrctrl->setSize(100, 50);
             m_ptr->addItem(ptrctrl);
         }
@@ -232,7 +233,8 @@ LRESULT ATLMain::OnRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
             for (int i =0; i < 10; i++)
             {
                 ATLButton *ptrctrl = new ATLButton(this);
-                ptrctrl->Create(m_ptr->m_hWnd);
+                ptrctrl->setHwnd(m_ptr->m_hWnd);
+                //ptrctrl->Create(m_ptr->m_hWnd);
                 ptrctrl->setSize(100, 50);
                 ptrctrl->LoadImageW(IDB_BITMAP1);
                 m_ptr->addItem(ptrctrl);
